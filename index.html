@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>iHerb Checker - בודק תוספי תזונה | בדיקת בטיחות תוספים מ-iHerb</title>
+<meta name="description" content="בדוק האם תוספי התזונה שלך מ-iHerb בטוחים. בדיקה אוטומטית מול מאגר התרופות של משרד הבריאות, זיהוי תרופות מרשם ובדיקת מינון עליון. חינם לגמרי.">
+<link rel="canonical" href="https://iherbchecker.com">
+<meta property="og:title" content="iHerb Checker - בודק תוספי תזונה מ-iHerb">
+<meta property="og:description" content="בדוק האם תוספי התזונה שלך מ-iHerb בטוחים. בדיקה מול מאגר משרד הבריאות. חינם.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://iherbchecker.com">
+<meta property="og:site_name" content="iHerb Checker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iHerb Checker - בודק תוספי תזונה">
+<meta name="twitter:description" content="בדוק האם תוספי התזונה שלך מ-iHerb בטוחים. חינם.">
+<meta name="theme-color" content="#f0f7f4">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800;900&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"iHerb Checker","description":"Free tool that checks iHerb supplements against the Israeli Ministry of Health drug registry.","url":"https://iherbchecker.com","applicationCategory":"HealthApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Organization","name":"Benda","url":"https://healthy-scan.app"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"מה זה iHerb Checker?","acceptedAnswer":{"@type":"Answer","text":"iHerb Checker הוא כלי חינמי שבודק תוספי תזונה מאתר iHerb מול מאגר התרופות של משרד הבריאות הישראלי. הכלי מזהה תרופות מרשם, בודק חריגות ממינון עליון ומספק דוח בטיחות מפורט."}},{"@type":"Question","name":"האם מלטונין חוקי בישראל?","acceptedAnswer":{"@type":"Answer","text":"מלטונין מוגדר בישראל כתרופת מרשם ונמכר רק במרשם רופא (Circadin 2mg). רכישת מלטונין מ-iHerb ללא מרשם היא בניגוד לחוק."}},{"@type":"Question","name":"איך הכלי בודק את התוסף?","acceptedAnswer":{"@type":"Answer","text":"הכלי מנתח את דף המוצר ב-iHerb, מחלץ את רשימת הרכיבים ובודק כל רכיב מול מאגר התרופות של משרד הבריאות. בנוסף, בודק חריגות ממינון עליון מומלץ."}},{"@type":"Question","name":"האם הכלי חינמי?","acceptedAnswer":{"@type":"Answer","text":"כן, iHerb Checker הוא חינמי לגמרי וללא הגבלה. אין צורך בהרשמה."}}]}
+</script>
+<!-- NOTE: This file uses innerHTML in controlled contexts only (SVG rendering for score ring, stat pills with escaped content, and melatonin banner with static trusted HTML). All user-provided content uses textContent for XSS safety. -->
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#f7faf8;--surface:#fff;--card:#fff;--border:#e2ebe6;--border-hover:#c8d9cf;
+--text:#1a2e23;--text-2:#5a7a68;--text-3:#8fa89a;
+--green:#0d7a3e;--green-light:#e8f5ee;--green-glow:rgba(13,122,62,.12);--green-soft:#d4edde;
+--red:#c0392b;--red-light:#fdecea;--red-border:rgba(192,57,43,.2);
+--yellow:#d4a017;--yellow-light:#fef9e7;--yellow-border:rgba(212,160,23,.25);
+--blue:#2471a3;--blue-light:#ebf5fb;--blue-border:rgba(36,113,163,.2);
+--teal:#148f77;
+--radius:12px;--radius-lg:18px;
+--font:'Heebo',sans-serif;
+--shadow-sm:0 1px 3px rgba(26,46,35,.06);
+--shadow-md:0 4px 16px rgba(26,46,35,.08);
+--shadow-lg:0 8px 32px rgba(26,46,35,.1);
+}
+html{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{min-height:100dvh;overflow-x:hidden;line-height:1.6}
+a{color:var(--green);text-decoration:none}
+.wrap{max-width:640px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:90;background:rgba(247,250,248,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:20px;font-weight:800;letter-spacing:-.03em;display:flex;align-items:center;gap:2px}
+.logo .shield{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:var(--green);border-radius:8px;margin-inline-end:8px}
+.logo .shield svg{width:16px;height:16px;fill:#fff}
+.logo .iherb{color:var(--green)}
+.logo .checker{color:var(--text)}
+.lang-btn{background:var(--green-light);border:1px solid var(--green-soft);color:var(--green);padding:5px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s}
+.lang-btn:hover{background:var(--green-soft)}
+.screen{display:none;animation:fadeUp .4s ease}.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.hero{padding:56px 0 40px;text-align:center}
+.hero h1{font-size:clamp(30px,7vw,44px);font-weight:900;letter-spacing:-.04em;line-height:1.15;margin-bottom:16px;color:var(--text)}
+.hero h1 .accent{color:var(--green);position:relative}
+.hero h1 .accent::after{content:'';position:absolute;bottom:2px;right:0;left:0;height:6px;background:var(--green-glow);border-radius:3px;z-index:-1}
+.hero .sub{font-size:16px;color:var(--text-2);max-width:420px;margin:0 auto 40px;line-height:1.7}
+.input-wrap{position:relative;max-width:540px;margin:0 auto}
+.input-wrap input{width:100%;padding:18px 22px;padding-right:140px;font-size:16px;font-family:var(--font);background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-lg);color:var(--text);outline:none;transition:all .3s;direction:ltr;text-align:left;box-shadow:var(--shadow-sm)}
+[dir="rtl"] .input-wrap input{padding-right:22px;padding-left:140px}
+.input-wrap input:focus{border-color:var(--green);box-shadow:0 0 0 4px var(--green-glow)}
+.input-wrap input::placeholder{color:var(--text-3);direction:rtl;text-align:right}
+[dir="ltr"] .input-wrap input::placeholder{direction:ltr;text-align:left}
+.check-btn{position:absolute;top:50%;right:6px;transform:translateY(-50%);background:var(--green);color:#fff;border:none;padding:12px 24px;border-radius:calc(var(--radius-lg) - 4px);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .25s;box-shadow:0 2px 8px rgba(13,122,62,.25)}
+[dir="rtl"] .check-btn{right:auto;left:6px}
+.check-btn:hover{filter:brightness(1.1);box-shadow:0 4px 12px rgba(13,122,62,.35);transform:translateY(-50%) translateY(-1px)}
+.check-btn:disabled{opacity:.5;cursor:not-allowed;transform:translateY(-50%)}
+.input-error{color:var(--red);font-size:13px;margin-top:10px;text-align:center;min-height:20px;font-weight:600}
+.trust{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:460px;margin:36px auto 0}
+.trust-item{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-2);background:var(--surface);padding:10px 14px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow-sm);transition:border-color .2s}
+.trust-item:hover{border-color:var(--green-soft)}
+.trust-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.trust-icon svg{width:18px;height:18px}
+.trust-icon.gov{background:var(--green-light)}.trust-icon.gov svg{stroke:var(--green);fill:none}
+.trust-icon.rx{background:var(--red-light)}.trust-icon.rx svg{stroke:var(--red);fill:none}
+.trust-icon.ul{background:var(--yellow-light)}.trust-icon.ul svg{stroke:var(--yellow);fill:none}
+.trust-icon.free{background:var(--blue-light)}.trust-icon.free svg{stroke:var(--blue);fill:none}
+.alert-banner{max-width:540px;margin:32px auto 0;background:var(--yellow-light);border:1px solid var(--yellow-border);border-radius:var(--radius);padding:14px 18px;display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#7d6608;line-height:1.6}
+.alert-banner .alert-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.how{padding:56px 0;border-top:1px solid var(--border);margin-top:48px}
+.section-title{font-size:26px;font-weight:900;letter-spacing:-.03em;text-align:center;margin-bottom:36px;color:var(--text)}
+.steps{display:flex;flex-direction:column;gap:16px;max-width:480px;margin:0 auto}
+.step{display:flex;align-items:flex-start;gap:16px;background:var(--surface);padding:18px 20px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow-sm);transition:all .25s}
+.step:hover{border-color:var(--green-soft);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.step-num{width:40px;height:40px;border-radius:12px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;flex-shrink:0}
+.step-content h3{font-size:16px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.step-content p{font-size:14px;color:var(--text-2);line-height:1.6}
+.faq{padding:48px 0;border-top:1px solid var(--border)}
+.faq-list{display:flex;flex-direction:column;gap:8px;max-width:540px;margin:0 auto}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);transition:border-color .2s}
+.faq-item:hover{border-color:var(--green-soft)}
+.faq-q{padding:16px 20px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;user-select:none;color:var(--text)}
+.faq-q::after{content:'+';font-size:22px;color:var(--text-3);transition:transform .25s;flex-shrink:0;font-weight:400}
+.faq-item.open .faq-q::after{transform:rotate(45deg);color:var(--green)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
+.faq-item.open .faq-a{max-height:300px;padding:0 20px 16px}
+.faq-a p{font-size:14px;color:var(--text-2);line-height:1.8}
+.loading-wrap{padding:100px 0;text-align:center}
+.spinner{width:52px;height:52px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 24px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:var(--text-2);font-size:16px;font-weight:600}
+.loading-steps{margin-top:24px;display:flex;flex-direction:column;gap:8px;align-items:center}
+.loading-step{font-size:14px;color:var(--text-3);transition:color .3s}
+.loading-step.active{color:var(--green);font-weight:600}
+.loading-step.done{color:var(--text-2)}
+.score-section{text-align:center;padding:48px 0 24px}
+.ring-wrap{position:relative;width:148px;height:148px;margin:0 auto 20px}
+.ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:8}
+.ring-fg{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.2s ease}
+.ring-score{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40px;font-weight:900;letter-spacing:-.04em}
+.verdict-text{font-size:22px;font-weight:800;margin-bottom:6px}
+.product-name{font-size:15px;color:var(--text-2);margin-bottom:4px}
+.product-brand{font-size:13px;color:var(--text-3)}
+.result-stats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:24px 0 28px}
+.stat-pill{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;border:1px solid}
+.stat-pill.safe{background:var(--green-light);border-color:var(--green-soft);color:var(--green)}
+.stat-pill.warn{background:var(--yellow-light);border-color:var(--yellow-border);color:#96750c}
+.stat-pill.danger{background:var(--red-light);border-color:var(--red-border);color:var(--red)}
+.ing-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.ing-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;transition:all .2s;box-shadow:var(--shadow-sm)}
+.ing-card:hover{border-color:var(--border-hover);box-shadow:var(--shadow-md)}
+.ing-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.ing-name{font-size:16px;font-weight:700;color:var(--text)}
+.ing-name-en{font-size:12px;color:var(--text-3);margin-top:3px;direction:ltr;text-align:left}
+.ing-amount{font-size:14px;color:var(--text-2);white-space:nowrap;flex-shrink:0;font-weight:600}
+.ing-dv{font-size:11px;color:var(--text-3)}
+.ing-flags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.flag{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;line-height:1.3}
+.flag.high{background:var(--red-light);color:var(--red);border:1px solid var(--red-border)}
+.flag.medium{background:var(--yellow-light);color:#7d6608;border:1px solid var(--yellow-border)}
+.flag.info{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border)}
+.flag.low{background:var(--green-light);color:var(--green);border:1px solid var(--green-soft)}
+.extra-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+.extra-title{font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.02em}
+.extra-text{font-size:14px;color:var(--text-2);line-height:1.7;direction:ltr;text-align:left}
+.warning-card{background:var(--yellow-light);border:1px solid var(--yellow-border);border-radius:var(--radius);padding:16px 18px;margin-bottom:10px}
+.warning-card .extra-title{color:#96750c}
+.actions{display:flex;gap:10px;margin:28px 0 48px;justify-content:center}
+.action-btn{padding:12px 28px;border-radius:var(--radius);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;border:2px solid;transition:all .25s}
+.action-btn.primary{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 2px 8px rgba(13,122,62,.2)}
+.action-btn.primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 16px rgba(13,122,62,.3)}
+.action-btn.secondary{background:var(--surface);color:var(--text-2);border-color:var(--border)}
+.action-btn.secondary:hover{border-color:var(--green-soft);color:var(--text)}
+footer{border-top:1px solid var(--border);padding:36px 0;text-align:center;background:var(--surface)}
+footer p{font-size:13px;color:var(--text-3);margin-bottom:6px}
+footer a{color:var(--green);font-weight:700}
+.footer-brand{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px;font-size:13px;color:var(--text-3)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:12px 28px;border-radius:var(--radius);font-size:14px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:var(--shadow-lg)}
+.toast.show{opacity:1}
+@media(max-width:480px){
+.hero{padding:40px 0 28px}
+.hero h1{font-size:28px}
+.trust{grid-template-columns:1fr;gap:8px;max-width:300px}
+.trust-item{padding:8px 12px}
+.input-wrap input{padding:15px 18px;padding-inline-end:120px;font-size:15px}
+.check-btn{padding:10px 18px;font-size:14px}
+.steps{gap:12px}
+.step{padding:14px 16px}
+.alert-banner{margin:24px auto 0;font-size:13px}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div class="logo">
+<span class="shield"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+<span class="iherb">iHerb</span><span class="checker"> Checker</span>
+</div>
+<button class="lang-btn" onclick="toggleLang()" id="lang-toggle">EN</button>
+</div></header>
+
+<div class="screen active" id="screen-input"><div class="wrap">
+<div class="hero">
+<h1 id="hero-title">האם התוסף שלך <span class="accent">בטוח</span>?</h1>
+<p class="sub" id="hero-sub">בודק תוספי תזונה מ-iHerb מול מאגר התרופות של משרד הבריאות הישראלי</p>
+<div class="input-wrap">
+<input type="url" id="url-input" dir="ltr" autocomplete="off" spellcheck="false">
+<button class="check-btn" id="check-btn" onclick="handleCheck()"><span id="btn-text">בדוק עכשיו</span></button>
+</div>
+<div class="input-error" id="input-error"></div>
+<div class="trust">
+<div class="trust-item"><div class="trust-icon gov"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div><span id="trust-1">מאגר משרד הבריאות</span></div>
+<div class="trust-item"><div class="trust-icon rx"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg></div><span id="trust-2">זיהוי תרופות מרשם</span></div>
+<div class="trust-item"><div class="trust-icon ul"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div><span id="trust-3">בדיקת מינון עליון</span></div>
+<div class="trust-item"><div class="trust-icon free"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></div><span id="trust-4">חינם לגמרי</span></div>
+</div>
+</div>
+<div class="alert-banner" id="melatonin-banner">
+<span class="alert-icon">&#9888;</span>
+<span id="melatonin-text">ידעת? <strong>מלטונין</strong> מוגדר בישראל כתרופת מרשם. רכישתו מ-iHerb ללא מרשם היא בניגוד לחוק.</span>
+</div>
+<div class="how"><h2 class="section-title" id="how-title">איך זה עובד?</h2><div class="steps">
+<div class="step"><div class="step-num">1</div><div class="step-content"><h3 id="s1t">הדבק קישור</h3><p id="s1d">העתק את הקישור למוצר מ-iHerb והדבק אותו בשורת החיפוש</p></div></div>
+<div class="step"><div class="step-num">2</div><div class="step-content"><h3 id="s2t">אנחנו בודקים</h3><p id="s2d">הכלי מנתח את הרכיבים ובודק כל אחד מול מאגר התרופות של משרד הבריאות</p></div></div>
+<div class="step"><div class="step-num">3</div><div class="step-content"><h3 id="s3t">קבל דוח</h3><p id="s3d">קבל דירוג בטיחות, אזהרות על תרופות מרשם וחריגות ממינון מומלץ</p></div></div>
+</div></div>
+<div class="faq"><h2 class="section-title" id="faq-title">שאלות נפוצות</h2><div class="faq-list" id="faq-list"></div></div>
+</div></div>
+
+<div class="screen" id="screen-loading"><div class="wrap"><div class="loading-wrap">
+<div class="spinner"></div>
+<div class="loading-text" id="loading-text">בודק את המוצר...</div>
+<div class="loading-steps">
+<div class="loading-step active" id="ls-1"></div>
+<div class="loading-step" id="ls-2"></div>
+<div class="loading-step" id="ls-3"></div>
+<div class="loading-step" id="ls-4"></div>
+</div>
+</div></div></div>
+
+<div class="screen" id="screen-results"><div class="wrap">
+<div id="results-container"></div>
+<div class="actions">
+<button class="action-btn primary" onclick="shareResult()"><span id="share-text">שתף תוצאה</span></button>
+<button class="action-btn secondary" onclick="goBack()"><span id="back-text">בדוק מוצר נוסף</span></button>
+</div>
+</div></div>
+
+<footer><div class="wrap">
+<div class="footer-brand">
+<span id="footer-1">בנוי על ידי <a href="https://healthy-scan.app" target="_blank" rel="noopener">Benda</a></span>
+<span>&middot;</span>
+<a href="https://healthy-scan.app" target="_blank" rel="noopener">HealthyScan</a>
+</div>
+<p id="footer-2">הכלי לא מהווה ייעוץ רפואי. התייעצו עם רופא לפני נטילת תוספי תזונה.</p>
+</div></footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var currentLang='he',lastData=null;
+var T={
+he:{heroTitle:'האם התוסף שלך',heroAccent:'בטוח',heroQ:'?',heroSub:'בודק תוספי תזונה מ-iHerb מול מאגר התרופות של משרד הבריאות הישראלי',placeholder:'הדבק קישור מ-iHerb...',btnCheck:'בדוק עכשיו',trust1:'מאגר משרד הבריאות',trust2:'זיהוי תרופות מרשם',trust3:'בדיקת מינון עליון',trust4:'חינם לגמרי',howTitle:'איך זה עובד?',s1t:'הדבק קישור',s1d:'העתק את הקישור למוצר מ-iHerb והדבק אותו בשורת החיפוש',s2t:'אנחנו בודקים',s2d:'הכלי מנתח את הרכיבים ובודק כל אחד מול מאגר התרופות של משרד הבריאות',s3t:'קבל דוח',s3d:'קבל דירוג בטיחות, אזהרות על תרופות מרשם וחריגות ממינון מומלץ',faqTitle:'שאלות נפוצות',loading:'בודק את המוצר...',ls1:'מנתח את דף המוצר',ls2:'בודק מול משרד הבריאות',ls3:'בודק מינון עליון',ls4:'מכין דוח',errorEmpty:'יש להזין קישור למוצר מ-iHerb',errorServer:'שגיאה בבדיקה. נסה שוב.',share:'שתף תוצאה',back:'בדוק מוצר נוסף',otherIng:'רכיבים נוספים',warnings:'אזהרות יצרן',safe:'תקין',caution:'שים לב',concern:'בעייתי',safeC:'תקינים',cautionC:'לבדיקה',dangerC:'בעייתיים',serving:'מנה',footer1:'בנוי על ידי',footer2:'הכלי לא מהווה ייעוץ רפואי. התייעצו עם רופא לפני נטילת תוספי תזונה.',shareMsg:'בדקתי את התוסף הזה ב-iHerb Checker:',copied:'הקישור הועתק!',langBtn:'EN',
+faqs:[{q:'מה זה iHerb Checker?',a:'iHerb Checker הוא כלי חינמי שבודק תוספי תזונה מאתר iHerb מול מאגר התרופות של משרד הבריאות הישראלי. הכלי מזהה תרופות מרשם, בודק חריגות ממינון עליון ומספק דוח בטיחות מפורט.'},{q:'האם מלטונין חוקי בישראל?',a:'מלטונין מוגדר בישראל כתרופת מרשם ונמכר רק במרשם רופא (Circadin 2mg). רכישת מלטונין מ-iHerb ללא מרשם היא בניגוד לחוק. iHerb Checker מזהה אוטומטית מוצרים המכילים מלטונין.'},{q:'איך הכלי בודק את התוסף?',a:'הכלי מנתח את דף המוצר ב-iHerb, מחלץ את רשימת הרכיבים ובודק כל רכיב מול מאגר התרופות של משרד הבריאות. בנוסף, הכלי בודק חריגות ממינון עליון מומלץ (UL) לפי הנחיות בינלאומיות.'},{q:'האם הכלי חינמי?',a:'כן, iHerb Checker הוא חינמי לגמרי. אין צורך בהרשמה ואין הגבלה על מספר הבדיקות.'}]},
+en:{heroTitle:'Is your supplement',heroAccent:'safe',heroQ:'?',heroSub:'Check iHerb supplements against the Israeli Ministry of Health drug registry',placeholder:'Paste iHerb product link...',btnCheck:'Check Now',trust1:'MOH Drug Registry',trust2:'Prescription Detection',trust3:'Upper Limit Check',trust4:'Completely Free',howTitle:'How It Works',s1t:'Paste Link',s1d:'Copy the product link from iHerb and paste it in the search bar',s2t:'We Check',s2d:'The tool analyzes every ingredient against the MOH drug registry',s3t:'Get Report',s3d:'Get a safety score, prescription warnings, and dosage alerts',faqTitle:'FAQ',loading:'Checking product...',ls1:'Analyzing product page',ls2:'Checking MOH registry',ls3:'Checking upper limits',ls4:'Preparing report',errorEmpty:'Please enter an iHerb product link',errorServer:'Error checking product. Please try again.',share:'Share Result',back:'Check Another',otherIng:'Other Ingredients',warnings:'Manufacturer Warnings',safe:'Safe',caution:'Caution',concern:'Concern',safeC:'Safe',cautionC:'Caution',dangerC:'Flagged',serving:'Serving Size',footer1:'Built by',footer2:'This tool does not constitute medical advice. Consult a doctor before taking supplements.',shareMsg:'I checked this supplement on iHerb Checker:',copied:'Link copied!',langBtn:'HE',
+faqs:[{q:'What is iHerb Checker?',a:'A free tool that checks iHerb supplements against the Israeli MOH drug registry. Detects prescription drugs and upper intake limit violations.'},{q:'Is Melatonin legal in Israel?',a:'Melatonin is prescription-only in Israel (Circadin 2mg). Buying it from iHerb without a prescription violates Israeli law.'},{q:'How does it work?',a:'The tool fetches the iHerb product page, extracts supplement facts, and cross-references each ingredient against the MOH drug database and international upper intake limits.'},{q:'Is it free?',a:'Yes, completely free with no registration required.'}]}
+};
+
+function $(id){return document.getElementById(id)}
+function esc(s){if(!s)return '';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+window.toggleLang=function(){
+currentLang=currentLang==='he'?'en':'he';
+document.documentElement.lang=currentLang;
+document.documentElement.dir=currentLang==='he'?'rtl':'ltr';
+applyLang();
+if(lastData)renderResults(lastData);
+};
+
+function applyLang(){
+var t=T[currentLang];
+$('hero-title').textContent='';
+$('hero-title').appendChild(document.createTextNode(t.heroTitle+' '));
+var sp=document.createElement('span');sp.className='accent';sp.textContent=t.heroAccent;
+$('hero-title').appendChild(sp);
+$('hero-title').appendChild(document.createTextNode(t.heroQ));
+$('hero-sub').textContent=t.heroSub;
+$('url-input').placeholder=t.placeholder;
+$('btn-text').textContent=t.btnCheck;
+$('trust-1').textContent=t.trust1;$('trust-2').textContent=t.trust2;
+$('trust-3').textContent=t.trust3;$('trust-4').textContent=t.trust4;
+$('how-title').textContent=t.howTitle;
+$('s1t').textContent=t.s1t;$('s1d').textContent=t.s1d;
+$('s2t').textContent=t.s2t;$('s2d').textContent=t.s2d;
+$('s3t').textContent=t.s3t;$('s3d').textContent=t.s3d;
+$('faq-title').textContent=t.faqTitle;
+$('loading-text').textContent=t.loading;
+$('ls-1').textContent='\u2022 '+t.ls1;$('ls-2').textContent='\u2022 '+t.ls2;
+$('ls-3').textContent='\u2022 '+t.ls3;$('ls-4').textContent='\u2022 '+t.ls4;
+$('share-text').textContent=t.share;$('back-text').textContent=t.back;
+$('lang-toggle').textContent=t.langBtn;
+$('footer-2').textContent=t.footer2;
+buildFAQ();
+}
+
+function buildFAQ(){
+var list=$('faq-list');list.textContent='';
+var faqs=T[currentLang].faqs;
+for(var i=0;i<faqs.length;i++){
+var item=document.createElement('div');item.className='faq-item';
+var q=document.createElement('div');q.className='faq-q';q.textContent=faqs[i].q;
+q.addEventListener('click',(function(el){return function(){el.classList.toggle('open')};})(item));
+var ad=document.createElement('div');ad.className='faq-a';
+var p=document.createElement('p');p.textContent=faqs[i].a;
+ad.appendChild(p);item.appendChild(q);item.appendChild(ad);list.appendChild(item);
+}}
+
+function showScreen(id){
+var screens=document.querySelectorAll('.screen');
+for(var i=0;i<screens.length;i++)screens[i].classList.remove('active');
+$(id).classList.add('active');window.scrollTo(0,0);
+}
+
+function showToast(msg){
+var el=$('toast');el.textContent=msg;el.classList.add('show');
+setTimeout(function(){el.classList.remove('show');},2500);
+}
+
+window.handleCheck=function(){
+var t=T[currentLang],input=$('url-input'),errEl=$('input-error');
+errEl.textContent='';
+var raw=input.value.trim();
+if(!raw){errEl.textContent=t.errorEmpty;input.focus();return;}
+showScreen('screen-loading');animateSteps();
+fetch('/api/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:raw})})
+.then(function(r){return r.json();})
+.then(function(data){
+if(data.error){showScreen('screen-input');errEl.textContent=(currentLang==='he'?(data.error||t.errorServer):(data.errorEn||data.error||t.errorServer));return;}
+lastData=data;renderResults(data);showScreen('screen-results');
+})
+.catch(function(){showScreen('screen-input');errEl.textContent=t.errorServer;});
+};
+
+function animateSteps(){
+var ids=['ls-1','ls-2','ls-3','ls-4'];
+for(var i=0;i<ids.length;i++)$(ids[i]).className='loading-step';
+$(ids[0]).className='loading-step active';
+for(var j=1;j<ids.length;j++){
+(function(idx){setTimeout(function(){$(ids[idx-1]).className='loading-step done';$(ids[idx]).className='loading-step active';},1200*idx);})(j);
+}}
+
+function renderResults(data){
+var t=T[currentLang],c=$('results-container');c.textContent='';
+var score=data.score||0;
+var scoreColor=score>=70?'var(--green)':score>=40?'var(--yellow)':'var(--red)';
+var verdict=score>=70?t.safe:score>=40?t.caution:t.concern;
+var circ=2*Math.PI*54,offset=circ-(score/100)*circ;
+
+var sd=document.createElement('div');sd.className='score-section';
+var rw=document.createElement('div');rw.className='ring-wrap';
+var svgNS='http://www.w3.org/2000/svg';
+var svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox','0 0 120 120');
+var bg=document.createElementNS(svgNS,'circle');bg.setAttribute('class','ring-bg');bg.setAttribute('cx','60');bg.setAttribute('cy','60');bg.setAttribute('r','54');
+var fg=document.createElementNS(svgNS,'circle');fg.setAttribute('class','ring-fg');fg.setAttribute('cx','60');fg.setAttribute('cy','60');fg.setAttribute('r','54');
+fg.setAttribute('stroke',scoreColor);fg.setAttribute('stroke-dasharray',String(circ));fg.setAttribute('stroke-dashoffset',String(circ));fg.id='ring-arc';
+svg.appendChild(bg);svg.appendChild(fg);rw.appendChild(svg);
+var rn=document.createElement('div');rn.className='ring-score';rn.id='ring-num';rn.style.color=scoreColor;rn.textContent='0';
+rw.appendChild(rn);sd.appendChild(rw);
+var vt=document.createElement('div');vt.className='verdict-text';vt.style.color=scoreColor;vt.textContent=verdict;sd.appendChild(vt);
+if(data.product){
+var pn=document.createElement('div');pn.className='product-name';pn.textContent=data.product.name||'';sd.appendChild(pn);
+if(data.product.brand){var pb=document.createElement('div');pb.className='product-brand';pb.textContent=data.product.brand;sd.appendChild(pb);}
+}
+c.appendChild(sd);
+setTimeout(function(){$('ring-arc').style.strokeDashoffset=offset;animNum('ring-num',score);},50);
+
+var ings=data.ingredients||[],safeN=0,cautN=0,danN=0;
+for(var i=0;i<ings.length;i++){var mx=maxSev(ings[i].flags);if(mx>=3)danN++;else if(mx>=2)cautN++;else safeN++;}
+var stats=document.createElement('div');stats.className='result-stats';
+var safeP=document.createElement('div');safeP.className='stat-pill safe';safeP.textContent=safeN+' '+t.safeC;
+var warnP=document.createElement('div');warnP.className='stat-pill warn';warnP.textContent=cautN+' '+t.cautionC;
+var danP=document.createElement('div');danP.className='stat-pill danger';danP.textContent=danN+' '+t.dangerC;
+stats.appendChild(safeP);stats.appendChild(warnP);stats.appendChild(danP);
+c.appendChild(stats);
+
+if(data.product&&data.product.servingSize){
+var sv=document.createElement('div');sv.className='extra-card';
+var svt=document.createElement('div');svt.className='extra-title';svt.textContent=t.serving;
+var svx=document.createElement('div');svx.className='extra-text';svx.textContent=data.product.servingSize;
+sv.appendChild(svt);sv.appendChild(svx);c.appendChild(sv);
+}
+
+if(ings.length>0){
+ings.sort(function(a,b){return maxSev(b.flags)-maxSev(a.flags);});
+var list=document.createElement('div');list.className='ing-list';
+for(var j=0;j<ings.length;j++){
+var ing=ings[j],card=document.createElement('div');card.className='ing-card';
+var nameText=(currentLang==='he'&&ing.hebrewName)?ing.hebrewName:ing.name;
+var subName=(currentLang==='he'&&ing.hebrewName&&ing.name!==ing.hebrewName)?ing.name:'';
+var topDiv=document.createElement('div');topDiv.className='ing-top';
+var nameDiv=document.createElement('div');
+var nm=document.createElement('div');nm.className='ing-name';nm.textContent=nameText;nameDiv.appendChild(nm);
+if(subName){var ne=document.createElement('div');ne.className='ing-name-en';ne.textContent=subName;nameDiv.appendChild(ne);}
+topDiv.appendChild(nameDiv);
+var amDiv=document.createElement('div');
+if(ing.amount){var am=document.createElement('div');am.className='ing-amount';am.textContent=ing.amount;amDiv.appendChild(am);}
+if(ing.dailyValue){var dv=document.createElement('div');dv.className='ing-dv';dv.textContent=ing.dailyValue;amDiv.appendChild(dv);}
+topDiv.appendChild(amDiv);card.appendChild(topDiv);
+if(ing.flags&&ing.flags.length>0){
+var fd=document.createElement('div');fd.className='ing-flags';
+for(var k=0;k<ing.flags.length;k++){
+var fl=ing.flags[k],badge=document.createElement('span');
+badge.className='flag '+(fl.severity||'info');
+badge.textContent=currentLang==='he'?(fl.text||fl.textEn||''):(fl.textEn||fl.text||'');
+fd.appendChild(badge);
+}card.appendChild(fd);
+}list.appendChild(card);
+}c.appendChild(list);
+}
+
+if(data.otherIngredients){
+var oi=document.createElement('div');oi.className='extra-card';
+var oit=document.createElement('div');oit.className='extra-title';oit.textContent=t.otherIng;
+var oix=document.createElement('div');oix.className='extra-text';oix.textContent=data.otherIngredients;
+oi.appendChild(oit);oi.appendChild(oix);c.appendChild(oi);
+}
+
+if(data.product&&data.product.warnings){
+var wc=document.createElement('div');wc.className='warning-card';
+var wt=document.createElement('div');wt.className='extra-title';wt.textContent=t.warnings;
+var wx=document.createElement('div');wx.className='extra-text';wx.textContent=data.product.warnings;
+wc.appendChild(wt);wc.appendChild(wx);c.appendChild(wc);
+}
+}
+
+function maxSev(flags){
+if(!flags)return 0;var m=0;
+for(var i=0;i<flags.length;i++){if(flags[i].severity==='high')m=3;else if(flags[i].severity==='medium'&&m<2)m=2;else if(m<1)m=1;}
+return m;
+}
+
+function animNum(id,target){
+var el=$(id),cur=0,step=Math.max(1,Math.floor(target/40));
+var iv=setInterval(function(){cur+=step;if(cur>=target){cur=target;clearInterval(iv);}el.textContent=cur;},25);
+}
+
+window.goBack=function(){lastData=null;$('url-input').value='';$('input-error').textContent='';showScreen('screen-input');};
+
+window.shareResult=function(){
+var t=T[currentLang];if(!lastData)return;
+var text=t.shareMsg+'\n'+(lastData.product?lastData.product.name+' \u2014 ':'')+lastData.score+'/100\nhttps://iherbchecker.com';
+if(navigator.share){navigator.share({title:'iHerb Checker',text:text}).catch(function(){});}
+else if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){showToast(t.copied);}).catch(function(){});}
+};
+
+$('url-input').addEventListener('keydown',function(e){if(e.key==='Enter')handleCheck();});
+applyLang();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+name = "iherbchecker"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "benda-ingredients"
+database_id = "1f3b5be0-78c1-49e5-959a-8817b5ddebbf"

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /supplement/
+Allow: /he/
+
+Disallow: /api/
+
+Sitemap: https://iherbchecker.com/sitemap.xml
+Sitemap: https://iherbchecker.com/api/supplement-sitemap
