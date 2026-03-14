@@ -413,12 +413,14 @@ export async function onRequestPost(context) {
 
         if (parsedUrl && parsedUrl.hostname === 'iherb.co') {
             try {
+                // Use redirect: 'manual' to grab Location header without downloading the page
+                // iherb.co returns 405 for HEAD requests, so we use GET
                 const redirectResp = await fetch(parsedUrl.href, {
-                    method: 'HEAD',
-                    redirect: 'follow',
+                    redirect: 'manual',
                     headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
                 });
-                const resolvedUrl = redirectResp.url;
+                const location = redirectResp.headers.get('Location');
+                const resolvedUrl = location || parsedUrl.href;
                 try { parsedUrl = new URL(resolvedUrl); } catch { parsedUrl = null; }
             } catch {
                 parsedUrl = null;
