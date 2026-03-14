@@ -402,13 +402,38 @@ export async function onRequestPost(context) {
         let rawInput = (body.url || '').trim();
 
         // Extract iHerb URL from pasted text (iHerb "Share" copies text + URL together)
-        // e.g. "Check out this product on iHerb https://il.iherb.com/pr/something/12345"
-        const urlMatch = rawInput.match(/https?:\/\/(?:www\.|il\.)?iherb\.com\/pr\/[^\s"'<>]+/i);
-        const iherbUrl = urlMatch ? urlMatch[0] : rawInput;
+        // Handles both full URLs and short invite links (iherb.co/XXX?rcode=...)
+        const fullUrlMatch = rawInput.match(/https?:\/\/(?:www\.|il\.)?iherb\.com\/pr\/[^\s"'<>]+/i);
+        const shortUrlMatch = rawInput.match(/https?:\/\/iherb\.co\/[^\s"'<>]+/i);
+        let iherbUrl = fullUrlMatch ? fullUrlMatch[0] : (shortUrlMatch ? shortUrlMatch[0] : rawInput);
 
-        // Validate URL: must be a real iHerb product page (prevent SSRF)
+        // Resolve iherb.co short/invite links by following the redirect
         let parsedUrl;
         try { parsedUrl = new URL(iherbUrl); } catch { parsedUrl = null; }
+
+        if (parsedUrl && parsedUrl.hostname === 'iherb.co') {
+            try {
+                const redirectResp = await fetch(parsedUrl.href, {
+                    method: 'HEAD',
+                    redirect: 'follow',
+                    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+                });
+                const resolvedUrl = redirectResp.url;
+                try { parsedUrl = new URL(resolvedUrl); } catch { parsedUrl = null; }
+            } catch {
+                parsedUrl = null;
+            }
+        }
+
+        // Strip referral/tracking params (rcode, utm_*, etc.)
+        if (parsedUrl) {
+            parsedUrl.searchParams.delete('rcode');
+            [...parsedUrl.searchParams.keys()]
+                .filter(k => k.startsWith('utm_'))
+                .forEach(k => parsedUrl.searchParams.delete(k));
+        }
+
+        // Validate URL: must be a real iHerb product page (prevent SSRF)
         const validHosts = ['iherb.com', 'www.iherb.com', 'il.iherb.com'];
         if (!parsedUrl || !validHosts.includes(parsedUrl.hostname) || !parsedUrl.pathname.startsWith('/pr/')) {
             return new Response(JSON.stringify({
