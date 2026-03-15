@@ -362,7 +362,10 @@ function translateWarnings(text) {
         ['Not intended for children', 'לא מיועד לילדים'],
         ['Please use caution if you have any allergies', 'יש לנהוג בזהירות אם יש לך אלרגיות'],
         ['allergies or sensitivities', 'אלרגיות או רגישויות'],
+        ['or sensitivities', 'או רגישויות'],
         ['to any of the listed ingredients', 'לאחד מהמרכיבים הרשומים'],
+        ['in any way', 'בכל דרך שהיא'],
+        ['Do not use if product has been opened or tampered with in any way', 'אין להשתמש אם המוצר נפתח או שנעשה בו שימוש בכל דרך שהיא'],
     ];
     let result = text;
     for (const [en, he] of map) {
