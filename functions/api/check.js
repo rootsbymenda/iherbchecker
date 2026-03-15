@@ -412,20 +412,37 @@ export async function onRequestPost(context) {
         try { parsedUrl = new URL(iherbUrl); } catch { parsedUrl = null; }
 
         if (parsedUrl && parsedUrl.hostname === 'iherb.co') {
+            // iherb.co is behind Cloudflare and blocks server-side fetch (522).
+            // Use unshorten.me API as fallback to resolve the short link.
+            let resolved = false;
             try {
-                // Follow full redirect chain: iherb.co → /pal/referral/ → /pr/product
-                // iherb.co rejects HEAD (405), so use GET with redirect:follow
-                const redirectResp = await fetch(parsedUrl.href, {
-                    redirect: 'follow',
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                        'Accept': 'text/html',
-                    },
-                });
-                const resolvedUrl = redirectResp.url;
-                try { parsedUrl = new URL(resolvedUrl); } catch { parsedUrl = null; }
-            } catch {
-                parsedUrl = null;
+                const resolveResp = await fetch(
+                    `https://unshorten.me/json/${encodeURIComponent(parsedUrl.href)}`,
+                    { headers: { 'User-Agent': 'iHerbChecker/1.0' } }
+                );
+                if (resolveResp.ok) {
+                    const data = await resolveResp.json();
+                    if (data.success && data.resolved_url) {
+                        try { parsedUrl = new URL(data.resolved_url); resolved = true; } catch { /* ignore */ }
+                    }
+                }
+            } catch { /* fallback below */ }
+
+            // Fallback: try direct fetch in case Cloudflare allows it sometimes
+            if (!resolved) {
+                try {
+                    const redirectResp = await fetch(parsedUrl.href, {
+                        redirect: 'follow',
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                            'Accept': 'text/html',
+                        },
+                    });
+                    const resolvedUrl = redirectResp.url;
+                    try { parsedUrl = new URL(resolvedUrl); } catch { parsedUrl = null; }
+                } catch {
+                    parsedUrl = null;
+                }
             }
         }
 

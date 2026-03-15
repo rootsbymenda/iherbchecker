@@ -313,36 +313,12 @@ if(short)return short[0];
 return text.trim();
 }
 
-function isShortLink(url){
-try{return new URL(url).hostname==='iherb.co';}catch(e){return false;}
-}
-
-function showShareLinkHint(errEl){
-errEl.textContent='';
-var bold=document.createElement('strong');
-bold.textContent=currentLang==='he'?'קישור שיתוף זוהה! ':'Share link detected! ';
-var hint=document.createTextNode(currentLang==='he'
-?'פתחנו את דף המוצר בלשונית חדשה. העתק את הכתובת משורת הכתובת והדבק כאן.'
-:'We opened the product page in a new tab. Copy the URL from the address bar and paste it here.');
-errEl.appendChild(bold);
-errEl.appendChild(hint);
-errEl.style.color='var(--blue)';
-setTimeout(function(){errEl.style.color='';},15000);
-}
-
 window.handleCheck=function(){
 var t=T[currentLang],input=$('url-input'),errEl=$('input-error');
-errEl.textContent='';errEl.style.color='';
+errEl.textContent='';
 var raw=input.value.trim();
 if(!raw){errEl.textContent=t.errorEmpty;input.focus();return;}
 var url=extractIHerbUrl(raw);
-if(isShortLink(url)){
-window.open(url,'_blank');
-showShareLinkHint(errEl);
-input.value='';
-input.focus();
-return;
-}
 showScreen('screen-loading');animateSteps();
 fetch('/api/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})})
 .then(function(r){return r.json();})
