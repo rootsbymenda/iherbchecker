@@ -138,7 +138,7 @@ function parseIHerbPage(html) {
 
             const ssMatch = tableHtml.match(/Serving Size[:\s]*<\/\w+>\s*([^<]+)/i) ||
                             tableHtml.match(/Serving Size[:\s]*([^<]+)/i);
-            if (ssMatch) result.servingSize = ssMatch[1].trim();
+            if (ssMatch) result.servingSize = ssMatch[1].replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 
             // Extract ingredient rows
             const rowRegex = /<tr[^>]*>\s*<td[^>]*>([^<]+)<\/td>\s*<td[^>]*>([^<]+)<\/td>\s*<td[^>]*>([^<]*)<\/td>/gi;
@@ -556,6 +556,14 @@ export async function onRequestPost(context) {
             },
             ingredients: enrichedIngredients,
             otherIngredients: product.otherIngredients,
+            summary: {
+                mohChecked: Object.keys(mohResults).length,
+                mohFound: Object.values(mohResults).filter(r => r.found).length,
+                prescriptionFound: Object.values(mohResults).filter(r => r.isPrescription).length,
+                ulChecked: Object.keys(ulResults).length,
+                ulExceeded: Object.values(ulResults).filter(r => r?.exceeds).length,
+                d1Matched: Object.values(d1Results).filter(r => r?.additive || r?.ingredient).length,
+            },
             meta: {
                 checkedAt: new Date().toISOString(),
                 mohApiUsed: Object.values(mohResults).some(r => r.found),

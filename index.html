@@ -371,6 +371,35 @@ var danP=document.createElement('div');danP.className='stat-pill danger';danP.te
 stats.appendChild(safeP);stats.appendChild(warnP);stats.appendChild(danP);
 c.appendChild(stats);
 
+// Summary card — what was actually checked
+if(data.summary){
+var sm=document.createElement('div');sm.className='extra-card';
+var smt=document.createElement('div');smt.className='extra-title';smt.textContent=currentLang==='he'?'מה בדקנו':'What we checked';
+var lines=[];
+var s=data.summary;
+if(currentLang==='he'){
+lines.push('\u2705 '+s.mohChecked+' רכיבים נבדקו מול מאגר התרופות של משרד הבריאות');
+if(s.prescriptionFound>0)lines.push('\u26a0\ufe0f '+s.prescriptionFound+' רכיבים מזוהים כתרופות מרשם בישראל');
+else lines.push('\u2705 לא נמצאו תרופות מרשם');
+if(s.ulChecked>0){
+if(s.ulExceeded>0)lines.push('\u26a0\ufe0f '+s.ulExceeded+' רכיבים חורגים מהמינון העליון המומלץ');
+else lines.push('\u2705 כל המינונים בטווח הבטוח');
+}
+if(s.d1Matched>0)lines.push('\u2705 '+s.d1Matched+' רכיבים נמצאו במאגר הבטיחות שלנו');
+}else{
+lines.push('\u2705 '+s.mohChecked+' ingredients checked against MOH Drug Registry');
+if(s.prescriptionFound>0)lines.push('\u26a0\ufe0f '+s.prescriptionFound+' identified as prescription drugs in Israel');
+else lines.push('\u2705 No prescription drugs found');
+if(s.ulChecked>0){
+if(s.ulExceeded>0)lines.push('\u26a0\ufe0f '+s.ulExceeded+' ingredients exceed Upper Tolerable Intake Limit');
+else lines.push('\u2705 All dosages within safe limits');
+}
+if(s.d1Matched>0)lines.push('\u2705 '+s.d1Matched+' ingredients found in our safety database');
+}
+var smbody=document.createElement('div');smbody.className='extra-text';smbody.style.whiteSpace='pre-line';smbody.textContent=lines.join('\n');
+sm.appendChild(smt);sm.appendChild(smbody);c.appendChild(sm);
+}
+
 if(data.product&&data.product.servingSize){
 var sv=document.createElement('div');sv.className='extra-card';
 var svt=document.createElement('div');svt.className='extra-title';svt.textContent=t.serving;
