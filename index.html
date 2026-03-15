@@ -396,7 +396,9 @@ else lines.push('\u2705 All dosages within safe limits');
 }
 if(s.d1Matched>0)lines.push('\u2705 '+s.d1Matched+' ingredients found in our safety database');
 }
-var smbody=document.createElement('div');smbody.className='extra-text';smbody.style.whiteSpace='pre-line';smbody.textContent=lines.join('\n');
+var smbody=document.createElement('div');smbody.className='extra-text';smbody.style.whiteSpace='pre-line';
+smbody.style.direction=currentLang==='he'?'rtl':'ltr';smbody.style.textAlign=currentLang==='he'?'right':'left';
+smbody.textContent=lines.join('\n');
 sm.appendChild(smt);sm.appendChild(smbody);c.appendChild(sm);
 }
 
