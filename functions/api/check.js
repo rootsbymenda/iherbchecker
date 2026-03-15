@@ -332,6 +332,45 @@ function checkUpperLimit(ingredientName, dosage, unit) {
     return null;
 }
 
+// ── Hebrew warning translations ────────────────────────────────
+function translateWarnings(text) {
+    if (!text) return null;
+    const map = [
+        ['Do not exceed recommended dose', 'אין לחרוג מהמינון המומלץ'],
+        ['Do not exceed the recommended dose', 'אין לחרוג מהמינון המומלץ'],
+        ['Pregnant or nursing mothers', 'נשים בהיריון או מניקות'],
+        ['Pregnant or nursing', 'בהיריון או מניקות'],
+        ['individuals with a known medical condition', 'אנשים עם מצב רפואי ידוע'],
+        ['should consult a physician', 'יש להתייעץ עם רופא'],
+        ['should consult a doctor', 'יש להתייעץ עם רופא'],
+        ['consult a physician before using', 'יש להתייעץ עם רופא לפני השימוש'],
+        ['consult your healthcare provider', 'יש להתייעץ עם הרופא המטפל'],
+        ['consult your doctor', 'יש להתייעץ עם הרופא'],
+        ['before using this or any dietary supplement', 'לפני שימוש בתוסף תזונה זה או כל תוסף אחר'],
+        ['before using this or any supplement', 'לפני שימוש בתוסף זה או כל תוסף אחר'],
+        ['Keep out of reach of children', 'יש לשמור הרחק מהישג ידם של ילדים'],
+        ['Keep out of the reach of children', 'יש לשמור הרחק מהישג ידם של ילדים'],
+        ['and pets', 'וחיות מחמד'],
+        ['Store in a cool, dry place', 'יש לאחסן במקום קריר ויבש'],
+        ['Store in a cool dry place', 'יש לאחסן במקום קריר ויבש'],
+        ['Do not use if product has been opened or tampered with', 'אין להשתמש אם המוצר נפתח או שנעשה בו שימוש'],
+        ['Do not use if seal is broken', 'אין להשתמש אם החותם נשבר'],
+        ['Do not use if safety seal is broken or missing', 'אין להשתמש אם חותם הבטיחות חסר או שבור'],
+        ['Discontinue use two weeks prior to surgery', 'יש להפסיק שימוש שבועיים לפני ניתוח'],
+        ['Discontinue use and consult', 'יש להפסיק שימוש ולהתייעץ'],
+        ['Not intended for those under the age of 18', 'לא מיועד למי שמתחת לגיל 18'],
+        ['Not intended for children', 'לא מיועד לילדים'],
+        ['Please use caution if you have any allergies', 'יש לנהוג בזהירות אם יש לך אלרגיות'],
+        ['allergies or sensitivities', 'אלרגיות או רגישויות'],
+        ['to any of the listed ingredients', 'לאחד מהמרכיבים הרשומים'],
+    ];
+    let result = text;
+    for (const [en, he] of map) {
+        result = result.replace(new RegExp(en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), he);
+    }
+    return result;
+}
+
 // ── Hebrew ingredient names ────────────────────────────────────
 const HEBREW_NAMES = {
     'melatonin': 'מלטונין',
@@ -552,6 +591,7 @@ export async function onRequestPost(context) {
                 upc: product.upc,
                 servingSize: product.servingSize,
                 warnings: product.warnings,
+                warningsHe: translateWarnings(product.warnings),
                 suggestedUse: product.suggestedUse,
             },
             ingredients: enrichedIngredients,

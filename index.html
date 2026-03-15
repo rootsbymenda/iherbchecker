@@ -445,9 +445,12 @@ oi.appendChild(oit);oi.appendChild(oix);c.appendChild(oi);
 }
 
 if(data.product&&data.product.warnings){
+var warnText=(currentLang==='he'&&data.product.warningsHe)?data.product.warningsHe:data.product.warnings;
 var wc=document.createElement('div');wc.className='warning-card';
 var wt=document.createElement('div');wt.className='extra-title';wt.textContent=t.warnings;
-var wx=document.createElement('div');wx.className='extra-text';wx.textContent=data.product.warnings;
+var wx=document.createElement('div');wx.className='extra-text';
+wx.style.direction=currentLang==='he'?'rtl':'ltr';wx.style.textAlign=currentLang==='he'?'right':'left';
+wx.textContent=warnText;
 wc.appendChild(wt);wc.appendChild(wx);c.appendChild(wc);
 }
 }
