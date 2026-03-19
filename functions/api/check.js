@@ -16,7 +16,7 @@ const ALLOWED_ORIGINS = [
     'https://iherbchecker.com',
     'https://www.iherbchecker.com',
     'https://iherbcheck.com',
-    'https://healthy-scan.app',
+    'https://twohalves.ai',
     'https://www.healthy-scan.app',
     'http://localhost:8788',
     'http://127.0.0.1:8788',

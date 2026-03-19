@@ -187,6 +187,420 @@ const SUPPLEMENTS = {
     category: 'נוגדי חמצון', categoryEn: 'Antioxidants',
     isPrescription: false,
   },
+  // ── Vitamins ──
+  'vitamin-a': {
+    en: 'Vitamin A', he: 'ויטמין A',
+    category: 'ויטמינים', categoryEn: 'Vitamins',
+    isPrescription: false,
+    dbAliases: ['vitamin a', 'retinol', 'beta carotene', 'retinyl palmitate']
+  },
+  'vitamin-e': {
+    en: 'Vitamin E', he: 'ויטמין E',
+    category: 'ויטמינים', categoryEn: 'Vitamins',
+    isPrescription: false,
+    dbAliases: ['vitamin e', 'tocopherol', 'alpha-tocopherol']
+  },
+  'vitamin-k2': {
+    en: 'Vitamin K2', he: 'ויטמין K2',
+    category: 'ויטמינים', categoryEn: 'Vitamins',
+    isPrescription: false,
+    dbAliases: ['vitamin k2', 'menaquinone', 'mk-7']
+  },
+  'vitamin-b6': {
+    en: 'Vitamin B6', he: 'ויטמין B6',
+    category: 'ויטמינים', categoryEn: 'Vitamins',
+    isPrescription: false,
+    dbAliases: ['vitamin b6', 'pyridoxine', 'pyridoxal']
+  },
+  'vitamin-b-complex': {
+    en: 'Vitamin B Complex', he: 'ויטמין B קומפלקס',
+    category: 'ויטמינים', categoryEn: 'Vitamins',
+    isPrescription: false,
+  },
+  'vitamin-d3': {
+    en: 'Vitamin D3', he: 'ויטמין D3',
+    category: 'ויטמינים', categoryEn: 'Vitamins',
+    isPrescription: false,
+    dbAliases: ['vitamin d3', 'cholecalciferol']
+  },
+  'niacin': {
+    en: 'Niacin (Vitamin B3)', he: 'ניאצין (ויטמין B3)',
+    category: 'ויטמינים', categoryEn: 'Vitamins',
+    isPrescription: false,
+    dbAliases: ['niacin', 'vitamin b3', 'niacinamide', 'nicotinamide']
+  },
+  // ── Minerals ──
+  'iodine': {
+    en: 'Iodine', he: 'יוד',
+    category: 'מינרלים', categoryEn: 'Minerals',
+    isPrescription: false,
+  },
+  'manganese': {
+    en: 'Manganese', he: 'מנגן',
+    category: 'מינרלים', categoryEn: 'Minerals',
+    isPrescription: false,
+  },
+  'copper': {
+    en: 'Copper', he: 'נחושת',
+    category: 'מינרלים', categoryEn: 'Minerals',
+    isPrescription: false,
+  },
+  'boron': {
+    en: 'Boron', he: 'בורון',
+    category: 'מינרלים', categoryEn: 'Minerals',
+    isPrescription: false,
+  },
+  // ── Amino Acids ──
+  'nac': {
+    en: 'NAC (N-Acetyl Cysteine)', he: 'NAC (נ-אצטיל ציסטאין)',
+    category: 'חומצות אמינו', categoryEn: 'Amino Acids',
+    isPrescription: false,
+    dbAliases: ['nac', 'n-acetyl cysteine', 'n-acetylcysteine']
+  },
+  'l-carnitine': {
+    en: 'L-Carnitine', he: 'ל-קרניטין',
+    category: 'חומצות אמינו', categoryEn: 'Amino Acids',
+    isPrescription: false,
+    dbAliases: ['l-carnitine', 'carnitine', 'acetyl-l-carnitine']
+  },
+  'l-arginine': {
+    en: 'L-Arginine', he: 'ל-ארגינין',
+    category: 'חומצות אמינו', categoryEn: 'Amino Acids',
+    isPrescription: false,
+  },
+  'l-glutamine': {
+    en: 'L-Glutamine', he: 'ל-גלוטמין',
+    category: 'חומצות אמינו', categoryEn: 'Amino Acids',
+    isPrescription: false,
+  },
+  'l-lysine': {
+    en: 'L-Lysine', he: 'ל-ליזין',
+    category: 'חומצות אמינו', categoryEn: 'Amino Acids',
+    isPrescription: false,
+  },
+  'taurine': {
+    en: 'Taurine', he: 'טאורין',
+    category: 'חומצות אמינו', categoryEn: 'Amino Acids',
+    isPrescription: false,
+  },
+  'tyrosine': {
+    en: 'L-Tyrosine', he: 'ל-טירוזין',
+    category: 'חומצות אמינו', categoryEn: 'Amino Acids',
+    isPrescription: false,
+    dbAliases: ['tyrosine', 'l-tyrosine']
+  },
+  'gaba': {
+    en: 'GABA', he: 'GABA (גאבא)',
+    category: 'מצב רוח ושינה', categoryEn: 'Mood & Sleep',
+    isPrescription: false,
+    dbAliases: ['gaba', 'gamma-aminobutyric acid']
+  },
+  'glycine': {
+    en: 'Glycine', he: 'גליצין',
+    category: 'חומצות אמינו', categoryEn: 'Amino Acids',
+    isPrescription: false,
+  },
+  'bcaa': {
+    en: 'BCAA', he: 'BCAA (חומצות אמינו מסועפות)',
+    category: 'ספורט וכושר', categoryEn: 'Sports & Fitness',
+    isPrescription: false,
+  },
+  // ── Herbal Supplements ──
+  'milk-thistle': {
+    en: 'Milk Thistle', he: 'גדילן מצוי',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['milk thistle', 'silymarin', 'silybum marianum']
+  },
+  'echinacea': {
+    en: 'Echinacea', he: 'אכינצאה',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+  },
+  'elderberry': {
+    en: 'Elderberry', he: 'סמבוק',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['elderberry', 'sambucus nigra']
+  },
+  'ginkgo-biloba': {
+    en: 'Ginkgo Biloba', he: 'גינקו בילובה',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+  },
+  'rhodiola': {
+    en: 'Rhodiola Rosea', he: 'רודיולה',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['rhodiola', 'rhodiola rosea']
+  },
+  'maca-root': {
+    en: 'Maca Root', he: 'שורש מאקה',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['maca', 'lepidium meyenii']
+  },
+  'saw-palmetto': {
+    en: 'Saw Palmetto', he: 'סו פלמטו',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['saw palmetto', 'serenoa repens']
+  },
+  'black-seed-oil': {
+    en: 'Black Seed Oil', he: 'שמן קצח (זרע שחור)',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['black seed oil', 'nigella sativa', 'black cumin']
+  },
+  'moringa': {
+    en: 'Moringa', he: 'מורינגה',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['moringa', 'moringa oleifera']
+  },
+  'fenugreek': {
+    en: 'Fenugreek', he: 'חילבה',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['fenugreek', 'trigonella foenum-graecum']
+  },
+  'oregano-oil': {
+    en: 'Oregano Oil', he: 'שמן אורגנו',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['oregano oil', 'origanum vulgare', 'carvacrol']
+  },
+  'garlic-extract': {
+    en: 'Garlic Extract', he: 'תמצית שום',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['garlic', 'allicin', 'allium sativum']
+  },
+  'green-tea-extract': {
+    en: 'Green Tea Extract (EGCG)', he: 'תמצית תה ירוק',
+    category: 'נוגדי חמצון', categoryEn: 'Antioxidants',
+    isPrescription: false,
+    dbAliases: ['green tea extract', 'egcg', 'epigallocatechin gallate']
+  },
+  'tongkat-ali': {
+    en: 'Tongkat Ali', he: 'טונגקט עלי',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['tongkat ali', 'eurycoma longifolia']
+  },
+  'tribulus': {
+    en: 'Tribulus Terrestris', he: 'טריבולוס',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+  },
+  'shilajit': {
+    en: 'Shilajit', he: 'שילאג\'יט',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+  },
+  'cinnamon-extract': {
+    en: 'Cinnamon Extract', he: 'תמצית קינמון',
+    category: 'צמחי מרפא', categoryEn: 'Herbal Supplements',
+    isPrescription: false,
+    dbAliases: ['cinnamon', 'cinnamomum']
+  },
+  // ── Mushrooms ──
+  'lions-mane': {
+    en: 'Lion\'s Mane', he: 'רעמת האריה',
+    category: 'פטריות מרפא', categoryEn: 'Medicinal Mushrooms',
+    isPrescription: false,
+    dbAliases: ['lion\'s mane', 'hericium erinaceus']
+  },
+  'reishi': {
+    en: 'Reishi', he: 'רייישי',
+    category: 'פטריות מרפא', categoryEn: 'Medicinal Mushrooms',
+    isPrescription: false,
+    dbAliases: ['reishi', 'ganoderma lucidum']
+  },
+  'cordyceps': {
+    en: 'Cordyceps', he: 'קורדיספס',
+    category: 'פטריות מרפא', categoryEn: 'Medicinal Mushrooms',
+    isPrescription: false,
+    dbAliases: ['cordyceps', 'cordyceps sinensis']
+  },
+  'turkey-tail': {
+    en: 'Turkey Tail', he: 'זנב הודו',
+    category: 'פטריות מרפא', categoryEn: 'Medicinal Mushrooms',
+    isPrescription: false,
+    dbAliases: ['turkey tail', 'trametes versicolor', 'coriolus versicolor']
+  },
+  'chaga': {
+    en: 'Chaga', he: 'צ\'אגה',
+    category: 'פטריות מרפא', categoryEn: 'Medicinal Mushrooms',
+    isPrescription: false,
+    dbAliases: ['chaga', 'inonotus obliquus']
+  },
+  // ── Specialty / Antioxidants ──
+  'alpha-lipoic-acid': {
+    en: 'Alpha Lipoic Acid', he: 'חומצה אלפא ליפואית',
+    category: 'נוגדי חמצון', categoryEn: 'Antioxidants',
+    isPrescription: false,
+    dbAliases: ['alpha lipoic acid', 'ala', 'thioctic acid']
+  },
+  'resveratrol': {
+    en: 'Resveratrol', he: 'רסברטרול',
+    category: 'נוגדי חמצון', categoryEn: 'Antioxidants',
+    isPrescription: false,
+  },
+  'astaxanthin': {
+    en: 'Astaxanthin', he: 'אסטקסנתין',
+    category: 'נוגדי חמצון', categoryEn: 'Antioxidants',
+    isPrescription: false,
+  },
+  'lutein': {
+    en: 'Lutein', he: 'לוטאין',
+    category: 'בריאות העיניים', categoryEn: 'Eye Health',
+    isPrescription: false,
+    dbAliases: ['lutein', 'zeaxanthin']
+  },
+  'lycopene': {
+    en: 'Lycopene', he: 'ליקופן',
+    category: 'נוגדי חמצון', categoryEn: 'Antioxidants',
+    isPrescription: false,
+  },
+  'pqq': {
+    en: 'PQQ', he: 'PQQ',
+    category: 'אנרגיה ולב', categoryEn: 'Energy & Heart',
+    isPrescription: false,
+    dbAliases: ['pqq', 'pyrroloquinoline quinone']
+  },
+  // ── Oils & Fats ──
+  'fish-oil': {
+    en: 'Fish Oil', he: 'שמן דגים',
+    category: 'שומנים חיוניים', categoryEn: 'Essential Fatty Acids',
+    isPrescription: false,
+    dbAliases: ['fish oil', 'epa', 'dha']
+  },
+  'krill-oil': {
+    en: 'Krill Oil', he: 'שמן קריל',
+    category: 'שומנים חיוניים', categoryEn: 'Essential Fatty Acids',
+    isPrescription: false,
+  },
+  'evening-primrose-oil': {
+    en: 'Evening Primrose Oil', he: 'שמן נר הלילה',
+    category: 'שומנים חיוניים', categoryEn: 'Essential Fatty Acids',
+    isPrescription: false,
+    dbAliases: ['evening primrose oil', 'gamma-linolenic acid', 'gla']
+  },
+  'mct-oil': {
+    en: 'MCT Oil', he: 'שמן MCT',
+    category: 'שומנים חיוניים', categoryEn: 'Essential Fatty Acids',
+    isPrescription: false,
+  },
+  // ── Joint & Bone ──
+  'glucosamine': {
+    en: 'Glucosamine', he: 'גלוקוזאמין',
+    category: 'מפרקים ועצמות', categoryEn: 'Joint & Bone Health',
+    isPrescription: false,
+    dbAliases: ['glucosamine', 'glucosamine sulfate', 'glucosamine hcl']
+  },
+  'chondroitin': {
+    en: 'Chondroitin', he: 'כונדרויטין',
+    category: 'מפרקים ועצמות', categoryEn: 'Joint & Bone Health',
+    isPrescription: false,
+    dbAliases: ['chondroitin', 'chondroitin sulfate']
+  },
+  'msm': {
+    en: 'MSM', he: 'MSM',
+    category: 'מפרקים ועצמות', categoryEn: 'Joint & Bone Health',
+    isPrescription: false,
+    dbAliases: ['msm', 'methylsulfonylmethane']
+  },
+  'hyaluronic-acid': {
+    en: 'Hyaluronic Acid', he: 'חומצה היאלורונית',
+    category: 'עור ויופי', categoryEn: 'Skin & Beauty',
+    isPrescription: false,
+  },
+  // ── Digestive ──
+  'digestive-enzymes': {
+    en: 'Digestive Enzymes', he: 'אנזימי עיכול',
+    category: 'עיכול', categoryEn: 'Digestive Health',
+    isPrescription: false,
+  },
+  'psyllium-husk': {
+    en: 'Psyllium Husk', he: 'קליפת פסיליום',
+    category: 'עיכול', categoryEn: 'Digestive Health',
+    isPrescription: false,
+    dbAliases: ['psyllium', 'psyllium husk', 'plantago ovata']
+  },
+  'apple-cider-vinegar': {
+    en: 'Apple Cider Vinegar', he: 'חומץ תפוחים',
+    category: 'עיכול', categoryEn: 'Digestive Health',
+    isPrescription: false,
+  },
+  'colostrum': {
+    en: 'Colostrum', he: 'קולוסטרום',
+    category: 'חיסון', categoryEn: 'Immune Support',
+    isPrescription: false,
+  },
+  // ── Other Popular ──
+  'inositol': {
+    en: 'Inositol', he: 'אינוזיטול',
+    category: 'מצב רוח', categoryEn: 'Mood Support',
+    isPrescription: false,
+    dbAliases: ['inositol', 'myo-inositol', 'd-chiro-inositol']
+  },
+  'choline': {
+    en: 'Choline', he: 'כולין',
+    category: 'מוח וזיכרון', categoryEn: 'Brain & Memory',
+    isPrescription: false,
+    dbAliases: ['choline', 'choline bitartrate', 'cdp-choline', 'citicoline']
+  },
+  'dim': {
+    en: 'DIM', he: 'DIM',
+    category: 'הורמונים', categoryEn: 'Hormones',
+    isPrescription: false,
+    dbAliases: ['dim', 'diindolylmethane']
+  },
+  'spirulina': {
+    en: 'Spirulina', he: 'ספירולינה',
+    category: 'סופרפוד', categoryEn: 'Superfoods',
+    isPrescription: false,
+  },
+  'chlorella': {
+    en: 'Chlorella', he: 'כלורלה',
+    category: 'סופרפוד', categoryEn: 'Superfoods',
+    isPrescription: false,
+  },
+  'whey-protein': {
+    en: 'Whey Protein', he: 'חלבון מי גבינה',
+    category: 'ספורט וכושר', categoryEn: 'Sports & Fitness',
+    isPrescription: false,
+  },
+  'melatonin-gummies': {
+    en: 'Melatonin Gummies', he: 'סוכריות מלטונין',
+    category: 'שינה ומנוחה', categoryEn: 'Sleep & Relaxation',
+    isPrescription: true,
+    prescriptionNote: 'מלטונין בכל צורה (כולל סוכריות גומי) מוגדר בישראל כתרופת מרשם. מוצרי מלטונין מ-iHerb אסורים ליבוא ללא מרשם רופא.',
+    prescriptionNoteEn: 'Melatonin in any form (including gummies) is classified as a prescription drug in Israel. Melatonin products from iHerb cannot be imported without a prescription.',
+  },
+  'cbd-oil': {
+    en: 'CBD Oil', he: 'שמן CBD',
+    category: 'קנאביס', categoryEn: 'Cannabis',
+    isPrescription: true,
+    prescriptionNote: 'CBD מוגדר בישראל כחומר מפוקח תחת פקודת הסמים המסוכנים. שימוש ויבוא דורשים אישור מיוחד מהיחידה לקנאביס רפואי במשרד הבריאות.',
+    prescriptionNoteEn: 'CBD is classified as a controlled substance in Israel under the Dangerous Drugs Ordinance. Use and import require special authorization from the Medical Cannabis Unit of the Ministry of Health.',
+  },
+  'bee-pollen': {
+    en: 'Bee Pollen', he: 'אבקת דבורים',
+    category: 'סופרפוד', categoryEn: 'Superfoods',
+    isPrescription: false,
+  },
+  'royal-jelly': {
+    en: 'Royal Jelly', he: 'מזון מלכות',
+    category: 'סופרפוד', categoryEn: 'Superfoods',
+    isPrescription: false,
+  },
+  'propolis': {
+    en: 'Propolis', he: 'פרופוליס',
+    category: 'חיסון', categoryEn: 'Immune Support',
+    isPrescription: false,
+  },
 };
 
 // ── Upper intake limits (mirrored from check.js for SSR) ───────
@@ -708,9 +1122,9 @@ ${renderRelatedSupplements(slug)}
 <footer>
 <div class="wrap">
 <div class="footer-brand">
-<span>Powered by <a href="https://healthy-scan.app" target="_blank" rel="noopener">Benda</a></span>
+<span>Built by <a href="https://twohalves.ai" target="_blank" rel="noopener">Two Halves</a></span>
 <span>&middot;</span>
-<a href="https://healthy-scan.app" target="_blank" rel="noopener">HealthyScan</a>
+<a href="https://twohalves.ai" target="_blank" rel="noopener">twohalves.ai</a>
 </div>
 <p>הכלי לא מהווה ייעוץ רפואי. התייעצו עם רופא לפני נטילת תוספי תזונה.</p>
 <p style="direction:ltr">This tool does not constitute medical advice. Consult a doctor before taking supplements.</p>

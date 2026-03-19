@@ -91,7 +91,7 @@ function buildSchemas() {
     publisher: {
       '@type': 'Organization',
       name: 'HealthyScan',
-      url: 'https://healthy-scan.app',
+      url: 'https://twohalves.ai',
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
   };
@@ -474,9 +474,9 @@ ${FAQ_ITEMS.map(
 <footer>
 <div class="wrap">
 <div class="footer-brand">
-<span>Powered by <a href="https://healthy-scan.app" target="_blank" rel="noopener">Benda</a></span>
+<span>Built by <a href="https://twohalves.ai" target="_blank" rel="noopener">Two Halves</a></span>
 <span>&middot;</span>
-<a href="https://healthy-scan.app" target="_blank" rel="noopener">HealthyScan</a>
+<a href="https://twohalves.ai" target="_blank" rel="noopener">twohalves.ai</a>
 </div>
 <p>הכלי לא מהווה ייעוץ רפואי. התייעצו עם רופא לפני נטילת תוספי תזונה.</p>
 <p style="direction:ltr">This tool does not constitute medical advice. Consult a doctor before taking supplements.</p>
