@@ -280,56 +280,32 @@ async function checkCosmeticIngredient(db, inciName) {
         const keyName = normalizedName.replace(/[\s\-\/\(\),\.]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
 
         // 1. Exact match on name or key (most reliable)
+        const COLS = `name, key, concern, safety, category, eu_status, us_status,
+                    sensitization, comedogenicity_rating, consumer_description,
+                    "function", allergen_listed, concern_reason`;
+
         let row = await db.prepare(
-            `SELECT name, key, safety_score, concern_level, category,
-                    eu_status, us_status, regulatory_status,
-                    sensitization, irritation, comedogenic,
-                    description
-             FROM ingredients
-             WHERE UPPER(name) = ? OR key = ?
-             LIMIT 1`
+            `SELECT ${COLS} FROM ingredients WHERE UPPER(name) = ? OR key = ? LIMIT 1`
         ).bind(normalizedName, keyName).first();
 
-        // 2. Try without parenthetical content: "ALOE BARBADENSIS LEAF JUICE POWDER" from "Aloe Barbadensis (Aloe) Leaf Juice Powder"
         if (!row) {
             const stripped = normalizedName.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
             if (stripped !== normalizedName) {
                 row = await db.prepare(
-                    `SELECT name, key, safety_score, concern_level, category,
-                            eu_status, us_status, regulatory_status,
-                            sensitization, irritation, comedogenic,
-                            description
-                     FROM ingredients
-                     WHERE UPPER(name) = ?
-                     LIMIT 1`
+                    `SELECT ${COLS} FROM ingredients WHERE UPPER(name) = ? LIMIT 1`
                 ).bind(stripped).first();
             }
         }
 
-        // 3. Try first word only for common single-word ingredients (GLYCERIN, WATER, etc.)
         if (!row && !normalizedName.includes(' ')) {
             row = await db.prepare(
-                `SELECT name, key, safety_score, concern_level, category,
-                        eu_status, us_status, regulatory_status,
-                        sensitization, irritation, comedogenic,
-                        description
-                 FROM ingredients
-                 WHERE UPPER(name) = ?
-                 LIMIT 1`
+                `SELECT ${COLS} FROM ingredients WHERE UPPER(name) = ? LIMIT 1`
             ).bind(normalizedName).first();
         }
 
-        // 4. Fuzzy match as last resort — but require the match to START with the search term
-        //    to avoid "WATER" matching "WATERMELON EXTRACT"
         if (!row) {
             row = await db.prepare(
-                `SELECT name, key, safety_score, concern_level, category,
-                        eu_status, us_status, regulatory_status,
-                        sensitization, irritation, comedogenic,
-                        description
-                 FROM ingredients
-                 WHERE UPPER(name) LIKE ? OR key LIKE ?
-                 LIMIT 1`
+                `SELECT ${COLS} FROM ingredients WHERE UPPER(name) LIKE ? OR key LIKE ? LIMIT 1`
             ).bind(normalizedName + '%', keyName + '%').first();
         }
 
@@ -341,17 +317,18 @@ async function checkCosmeticIngredient(db, inciName) {
             return {
                 found: true,
                 name: row.name,
-                safetyScore: row.safety_score,
-                concernLevel: row.concern_level,
-                category: row.category,
-                euStatus: row.eu_status,
-                usStatus: row.us_status,
-                regulatoryStatus: row.regulatory_status,
-                sensitization: row.sensitization,
-                irritation: row.irritation,
-                comedogenic: row.comedogenic,
-                description: row.description,
-                isAllergen,
+                safetyScore: row.safety || null,
+                concernLevel: row.concern || null,
+                category: row.category || null,
+                euStatus: row.eu_status || null,
+                usStatus: row.us_status || null,
+                function: row.function || null,
+                sensitization: row.sensitization || null,
+                comedogenic: row.comedogenicity_rating || null,
+                description: row.consumer_description || null,
+                concernReason: row.concern_reason || null,
+                allergenListed: row.allergen_listed || null,
+                isAllergen: isAllergen || (row.allergen_listed && row.allergen_listed !== ''),
             };
         }
 
@@ -385,7 +362,6 @@ function calculateCosmeticScore(cosmeticResults) {
         else if (eu.includes('restricted')) score -= 8;
 
         if (result.sensitization && parseFloat(result.sensitization) > 3) score -= 3;
-        if (result.irritation && parseFloat(result.irritation) > 3) score -= 3;
     }
 
     // Proportional deductions based on ingredient count
