@@ -844,6 +844,10 @@ export async function onRequestPost(context) {
                     inciListLength: product.inciList?.length || 0,
                     otherIngredients: product.otherIngredients || null,
                     fetchedUrl: parsedUrl.href,
+                    htmlSnippet: (() => {
+                        const idx = html.indexOf('Other Ingredients') !== -1 ? html.indexOf('Other Ingredients') : html.indexOf('Other ingredients');
+                        return idx > -1 ? html.substring(idx, idx + 500).replace(/</g, '&lt;') : 'NOT FOUND';
+                    })(),
                 },
             }), { status: 404, headers });
         }
