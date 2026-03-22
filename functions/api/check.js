@@ -214,7 +214,178 @@ function parseIHerbPage(html) {
         if (textMatch) result.suggestedUse = textMatch[1].replace(/&nbsp;/g, ' ').trim();
     }
 
+    // ── INCI Ingredient List (cosmetics/skincare fallback) ──
+    // If no supplement facts found, try to extract INCI list from "Other ingredients" or "Ingredients" section
+    if (result.ingredients.length === 0 && result.otherIngredients) {
+        result.isCosmetic = true;
+        result.inciList = result.otherIngredients
+            .split(/,\s*/)
+            .map(name => name.replace(/\.$/, '').trim())
+            .filter(name => name.length > 1 && !name.toLowerCase().includes('made in'));
+    }
+
+    // Also try "Ingredients" heading (different from "Other Ingredients")
+    if (result.ingredients.length === 0 && !result.inciList?.length) {
+        const ingIdx = html.indexOf('>Ingredients<');
+        if (ingIdx > -1) {
+            const snippet = html.substring(ingIdx, ingIdx + 2000);
+            const textMatch = snippet.match(/Ingredients[^<]*<\/[^>]+>\s*<[^>]+>([^<]+)/i);
+            if (textMatch) {
+                const rawList = textMatch[1].replace(/&nbsp;/g, ' ').trim();
+                result.isCosmetic = true;
+                result.inciList = rawList
+                    .split(/,\s*/)
+                    .map(name => name.replace(/\.$/, '').trim())
+                    .filter(name => name.length > 1 && !name.toLowerCase().includes('made in'));
+                if (!result.otherIngredients) result.otherIngredients = rawList;
+            }
+        }
+    }
+
     return result;
+}
+
+// ── EU Fragrance Allergens (Regulation 2023/1545 — 82 allergens) ──
+// Subset of the most common INCI names that trigger mandatory labeling
+const EU_ALLERGENS = new Set([
+    'LIMONENE', 'LINALOOL', 'CITRONELLOL', 'GERANIOL', 'CITRAL',
+    'COUMARIN', 'EUGENOL', 'ISOEUGENOL', 'CINNAMAL', 'CINNAMYL ALCOHOL',
+    'HYDROXYCITRONELLAL', 'BENZYL BENZOATE', 'BENZYL SALICYLATE',
+    'BENZYL ALCOHOL', 'FARNESOL', 'HEXYL CINNAMAL', 'BUTYLPHENYL METHYLPROPIONAL',
+    'ALPHA-ISOMETHYL IONONE', 'AMYL CINNAMAL', 'AMYLCINNAMYL ALCOHOL',
+    'ANISE ALCOHOL', 'BENZYL CINNAMATE', 'EVERNIA PRUNASTRI EXTRACT',
+    'EVERNIA FURFURACEA EXTRACT', 'HYDROXYISOHEXYL 3-CYCLOHEXENE CARBOXALDEHYDE',
+    'METHYL 2-OCTYNOATE', 'VANILLIN', 'MENTHOL', 'CAMPHOR',
+    'LINALYL ACETATE', 'CARVONE', 'TERPINOLENE', 'ALPHA-TERPINENE',
+]);
+
+// ── Cosmetic ingredient D1 lookup ─────────────────────────────
+async function checkCosmeticIngredient(db, inciName) {
+    try {
+        const normalizedName = inciName.toUpperCase().replace(/\s*\/\s*/g, '/').trim();
+        // Generate key format: spaces/hyphens/slashes → underscores
+        const keyName = normalizedName.replace(/[\s\-\/\(\),\.]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+
+        // 1. Exact match on name or key (most reliable)
+        let row = await db.prepare(
+            `SELECT name, key, safety_score, concern_level, category,
+                    eu_status, us_status, regulatory_status,
+                    sensitization, irritation, comedogenic,
+                    description
+             FROM ingredients
+             WHERE UPPER(name) = ? OR key = ?
+             LIMIT 1`
+        ).bind(normalizedName, keyName).first();
+
+        // 2. Try without parenthetical content: "ALOE BARBADENSIS LEAF JUICE POWDER" from "Aloe Barbadensis (Aloe) Leaf Juice Powder"
+        if (!row) {
+            const stripped = normalizedName.replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+            if (stripped !== normalizedName) {
+                row = await db.prepare(
+                    `SELECT name, key, safety_score, concern_level, category,
+                            eu_status, us_status, regulatory_status,
+                            sensitization, irritation, comedogenic,
+                            description
+                     FROM ingredients
+                     WHERE UPPER(name) = ?
+                     LIMIT 1`
+                ).bind(stripped).first();
+            }
+        }
+
+        // 3. Try first word only for common single-word ingredients (GLYCERIN, WATER, etc.)
+        if (!row && !normalizedName.includes(' ')) {
+            row = await db.prepare(
+                `SELECT name, key, safety_score, concern_level, category,
+                        eu_status, us_status, regulatory_status,
+                        sensitization, irritation, comedogenic,
+                        description
+                 FROM ingredients
+                 WHERE UPPER(name) = ?
+                 LIMIT 1`
+            ).bind(normalizedName).first();
+        }
+
+        // 4. Fuzzy match as last resort — but require the match to START with the search term
+        //    to avoid "WATER" matching "WATERMELON EXTRACT"
+        if (!row) {
+            row = await db.prepare(
+                `SELECT name, key, safety_score, concern_level, category,
+                        eu_status, us_status, regulatory_status,
+                        sensitization, irritation, comedogenic,
+                        description
+                 FROM ingredients
+                 WHERE UPPER(name) LIKE ? OR key LIKE ?
+                 LIMIT 1`
+            ).bind(normalizedName + '%', keyName + '%').first();
+        }
+
+        // Check EU allergen status
+        const isAllergen = EU_ALLERGENS.has(normalizedName) ||
+                           EU_ALLERGENS.has(normalizedName.replace(/\s*\/\s*.*$/, '').trim());
+
+        if (row) {
+            return {
+                found: true,
+                name: row.name,
+                safetyScore: row.safety_score,
+                concernLevel: row.concern_level,
+                category: row.category,
+                euStatus: row.eu_status,
+                usStatus: row.us_status,
+                regulatoryStatus: row.regulatory_status,
+                sensitization: row.sensitization,
+                irritation: row.irritation,
+                comedogenic: row.comedogenic,
+                description: row.description,
+                isAllergen,
+            };
+        }
+
+        return { found: false, isAllergen };
+    } catch (e) {
+        return { found: false, error: e.message, isAllergen: false };
+    }
+}
+
+// ── Cosmetic product scoring ──────────────────────────────────
+function calculateCosmeticScore(cosmeticResults) {
+    let score = 100;
+    const total = Object.keys(cosmeticResults).length || 1;
+    let highCount = 0;
+    let modCount = 0;
+    let allergenCount = 0;
+
+    for (const result of Object.values(cosmeticResults)) {
+        if (!result) continue;
+
+        if (result.isAllergen) allergenCount++;
+
+        if (!result.found) continue;
+
+        const concern = (result.concernLevel || '').toLowerCase();
+        if (concern === 'high') highCount++;
+        else if (concern === 'moderate') modCount++;
+
+        const eu = (result.euStatus || '').toLowerCase();
+        if (eu.includes('prohibited') || eu.includes('banned')) score -= 25;
+        else if (eu.includes('restricted')) score -= 8;
+
+        if (result.sensitization && parseFloat(result.sensitization) > 3) score -= 3;
+        if (result.irritation && parseFloat(result.irritation) > 3) score -= 3;
+    }
+
+    // Proportional deductions based on ingredient count
+    // More ingredients = each individual concern has less weight
+    const weight = Math.max(1, 30 / total); // normalize: 30-ingredient product = 1x, 5-ingredient = 6x
+    score -= highCount * (12 * weight);
+    score -= modCount * (4 * weight);
+
+    // Allergens are informational (required labeling) but not inherently unsafe
+    // Small deduction only if many allergens present
+    if (allergenCount > 3) score -= 3;
+
+    return Math.max(0, Math.min(100, Math.round(score)));
 }
 
 // ── MOH Drug Registry lookup ───────────────────────────────────
@@ -445,7 +616,7 @@ export async function onRequestPost(context) {
 
         // Extract iHerb URL from pasted text (iHerb "Share" copies text + URL together)
         // Handles both full URLs and short invite links (iherb.co/XXX?rcode=...)
-        const fullUrlMatch = rawInput.match(/https?:\/\/(?:www\.|il\.)?iherb\.com\/pr\/[^\s"'<>]+/i);
+        const fullUrlMatch = rawInput.match(/https?:\/\/(?:[a-z]{2,3}\.)?iherb\.com\/pr\/[^\s"'<>]+/i);
         const shortUrlMatch = rawInput.match(/https?:\/\/iherb\.co\/[^\s"'<>]+/i);
         let iherbUrl = fullUrlMatch ? fullUrlMatch[0] : (shortUrlMatch ? shortUrlMatch[0] : rawInput);
 
@@ -488,6 +659,13 @@ export async function onRequestPost(context) {
             }
         }
 
+        // Normalize country-specific subdomains to www.iherb.com (English page)
+        // il.iherb.com, sa.iherb.com, kr.iherb.com etc. serve localized pages
+        // that break our English keyword parser
+        if (parsedUrl && parsedUrl.hostname.endsWith('.iherb.com') && parsedUrl.hostname !== 'www.iherb.com' && parsedUrl.hostname !== 'iherb.com') {
+            parsedUrl.hostname = 'www.iherb.com';
+        }
+
         // Strip referral/tracking params (rcode, utm_*, etc.)
         if (parsedUrl) {
             parsedUrl.searchParams.delete('rcode');
@@ -497,8 +675,13 @@ export async function onRequestPost(context) {
         }
 
         // Validate URL: must be a real iHerb product page (prevent SSRF)
-        const validHosts = ['iherb.com', 'www.iherb.com', 'il.iherb.com'];
-        if (!parsedUrl || !validHosts.includes(parsedUrl.hostname) || !parsedUrl.pathname.startsWith('/pr/')) {
+        // Accept any country subdomain (il., sa., kr., jp., etc.)
+        const isValidHost = parsedUrl && (
+            parsedUrl.hostname === 'iherb.com' ||
+            parsedUrl.hostname === 'www.iherb.com' ||
+            parsedUrl.hostname.endsWith('.iherb.com')
+        );
+        if (!isValidHost || !parsedUrl.pathname.startsWith('/pr/')) {
             return new Response(JSON.stringify({
                 error: 'כתובת לא תקינה. יש להזין קישור למוצר מ-iHerb',
                 errorEn: 'Invalid URL. Please enter an iHerb product link.',
@@ -524,14 +707,109 @@ export async function onRequestPost(context) {
         const html = await pageResp.text();
         const product = parseIHerbPage(html);
 
+        // ── COSMETIC PRODUCT PATH ──
+        // If no supplement facts but INCI list found, run cosmetic analysis
+        if (product.ingredients.length === 0 && product.inciList?.length > 0 && env.DB) {
+            const cosmeticResults = {};
+
+            const cosmeticLookups = product.inciList.map(async (inciName) => {
+                cosmeticResults[inciName] = await checkCosmeticIngredient(env.DB, inciName);
+            });
+            await Promise.all(cosmeticLookups);
+
+            const score = calculateCosmeticScore(cosmeticResults);
+            const verdict = getVerdict(score);
+
+            const enrichedIngredients = product.inciList.map(inciName => {
+                const data = cosmeticResults[inciName];
+                const flags = [];
+
+                if (data?.found) {
+                    const concern = (data.concernLevel || '').toLowerCase();
+                    if (concern === 'high') {
+                        flags.push({ type: 'high_concern', severity: 'high', text: 'רמת דאגה גבוהה', textEn: `High concern: ${data.description || ''}` });
+                    } else if (concern === 'moderate') {
+                        flags.push({ type: 'moderate_concern', severity: 'medium', text: 'רמת דאגה בינונית', textEn: `Moderate concern: ${data.description || ''}` });
+                    }
+
+                    const eu = (data.euStatus || '').toLowerCase();
+                    if (eu.includes('prohibited') || eu.includes('banned')) {
+                        flags.push({ type: 'eu_banned', severity: 'high', text: 'אסור באיחוד האירופי', textEn: 'Prohibited in the EU' });
+                    } else if (eu.includes('restricted')) {
+                        flags.push({ type: 'eu_restricted', severity: 'medium', text: 'מוגבל באיחוד האירופי', textEn: `EU restricted: ${data.euStatus}` });
+                    }
+
+                    if (data.sensitization && parseFloat(data.sensitization) > 3) {
+                        flags.push({ type: 'sensitizer', severity: 'medium', text: 'עלול לגרום לרגישות עור', textEn: 'Potential skin sensitizer' });
+                    }
+
+                    if (data.comedogenic && parseFloat(data.comedogenic) >= 3) {
+                        flags.push({ type: 'comedogenic', severity: 'medium', text: 'עלול לגרום לחסימת נקבוביות', textEn: `Comedogenic rating: ${data.comedogenic}/5` });
+                    }
+                }
+
+                // Allergen flag — even if not in DB, we know from the EU list
+                if (data?.isAllergen) {
+                    flags.push({ type: 'allergen', severity: 'info', text: 'אלרגן מוכר (EU 2023/1545) — חייב סימון', textEn: 'EU fragrance allergen — mandatory labeling (EU 2023/1545)' });
+                }
+
+                return {
+                    name: inciName,
+                    found: data?.found || false,
+                    safetyScore: data?.safetyScore || null,
+                    concernLevel: data?.concernLevel || null,
+                    category: data?.category || null,
+                    euStatus: data?.euStatus || null,
+                    usStatus: data?.usStatus || null,
+                    isAllergen: data?.isAllergen || false,
+                    flags,
+                };
+            });
+
+            const matched = enrichedIngredients.filter(i => i.found).length;
+            const flagged = enrichedIngredients.filter(i => i.flags.length > 0).length;
+            const allergens = enrichedIngredients.filter(i => i.isAllergen).length;
+
+            return new Response(JSON.stringify({
+                type: 'cosmetic',
+                score,
+                ...verdict,
+                product: {
+                    name: product.name,
+                    brand: product.brand,
+                    upc: product.upc,
+                    warnings: product.warnings,
+                    warningsHe: translateWarnings(product.warnings),
+                    suggestedUse: product.suggestedUse,
+                },
+                ingredients: enrichedIngredients,
+                otherIngredients: product.otherIngredients,
+                summary: {
+                    totalIngredients: product.inciList.length,
+                    matchedInDb: matched,
+                    flaggedIngredients: flagged,
+                    allergenCount: allergens,
+                    coveragePercent: Math.round((matched / product.inciList.length) * 100),
+                },
+                meta: {
+                    checkedAt: new Date().toISOString(),
+                    productType: 'cosmetic',
+                    ingredientCount: product.inciList.length,
+                    flagCount: enrichedIngredients.reduce((sum, i) => sum + i.flags.length, 0),
+                },
+            }), { status: 200, headers });
+        }
+
+        // No supplement facts AND no INCI list — truly empty
         if (product.ingredients.length === 0) {
             return new Response(JSON.stringify({
                 error: 'לא נמצאו רכיבים בדף המוצר. ייתכן שהמוצר הופסק.',
-                errorEn: 'No supplement facts found. Product may be discontinued.',
+                errorEn: 'No ingredients found. Product may be discontinued.',
                 product: { name: product.name, brand: product.brand },
             }), { status: 404, headers });
         }
 
+        // ── SUPPLEMENT PRODUCT PATH (existing flow) ──
         // Step 2: Cross-reference all ingredients in parallel
         const mohResults = {};
         const d1Results = {};

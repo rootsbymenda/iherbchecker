@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>iHerb Checker - בודק תוספי תזונה | בדיקת בטיחות תוספים מ-iHerb</title>
 <meta name="description" content="בדוק האם תוספי התזונה שלך מ-iHerb בטוחים. בדיקה אוטומטית מול מאגר התרופות של משרד הבריאות, זיהוי תרופות מרשם ובדיקת מינון עליון. חינם לגמרי.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="canonical" href="https://iherbchecker.com">
 <meta property="og:title" content="iHerb Checker - בודק תוספי תזונה מ-iHerb">
 <meta property="og:description" content="בדוק האם תוספי התזונה שלך מ-iHerb בטוחים. בדיקה מול מאגר משרד הבריאות. חינם.">
@@ -19,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;800;900&display=swap" rel="stylesheet">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"iHerb Checker","description":"Free tool that checks iHerb supplements against the Israeli Ministry of Health drug registry.","url":"https://iherbchecker.com","applicationCategory":"HealthApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Organization","name":"Benda","url":"https://twohalves.ai"}}
+{"@context":"https://schema.org","@type":"WebApplication","name":"iHerb Checker","description":"Free tool that checks iHerb supplements and cosmetics for safety — cross-references MOH drug registry, 30K+ ingredient database, EU allergens, and regulatory flags.","url":"https://iherbchecker.com","applicationCategory":"HealthApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Organization","name":"Benda","url":"https://twohalves.ai"}}
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"מה זה iHerb Checker?","acceptedAnswer":{"@type":"Answer","text":"iHerb Checker הוא כלי חינמי שבודק תוספי תזונה מאתר iHerb מול מאגר התרופות של משרד הבריאות הישראלי. הכלי מזהה תרופות מרשם, בודק חריגות ממינון עליון ומספק דוח בטיחות מפורט."}},{"@type":"Question","name":"האם מלטונין חוקי בישראל?","acceptedAnswer":{"@type":"Answer","text":"מלטונין מוגדר בישראל כתרופת מרשם ונמכר רק במרשם רופא (Circadin 2mg). רכישת מלטונין מ-iHerb ללא מרשם היא בניגוד לחוק."}},{"@type":"Question","name":"איך הכלי בודק את התוסף?","acceptedAnswer":{"@type":"Answer","text":"הכלי מנתח את דף המוצר ב-iHerb, מחלץ את רשימת הרכיבים ובודק כל רכיב מול מאגר התרופות של משרד הבריאות. בנוסף, בודק חריגות ממינון עליון מומלץ."}},{"@type":"Question","name":"האם הכלי חינמי?","acceptedAnswer":{"@type":"Answer","text":"כן, iHerb Checker הוא חינמי לגמרי וללא הגבלה. אין צורך בהרשמה."}}]}
@@ -377,6 +378,21 @@ var sm=document.createElement('div');sm.className='extra-card';
 var smt=document.createElement('div');smt.className='extra-title';smt.textContent=currentLang==='he'?'מה בדקנו':'What we checked';
 var lines=[];
 var s=data.summary;
+if(data.type==='cosmetic'){
+if(currentLang==='he'){
+lines.push('\u2705 '+s.totalIngredients+' רכיבים קוסמטיים זוהו');
+lines.push('\u2705 '+s.matchedInDb+' נמצאו במאגר הבטיחות שלנו ('+s.coveragePercent+'% כיסוי)');
+if(s.flaggedIngredients>0)lines.push('\u26a0\ufe0f '+s.flaggedIngredients+' רכיבים עם דגלי בטיחות');
+else lines.push('\u2705 לא נמצאו רכיבים בעייתיים');
+if(s.allergenCount>0)lines.push('\u2139\ufe0f '+s.allergenCount+' אלרגנים מוכרים (EU 2023/1545)');
+}else{
+lines.push('\u2705 '+s.totalIngredients+' cosmetic ingredients identified');
+lines.push('\u2705 '+s.matchedInDb+' found in our safety database ('+s.coveragePercent+'% coverage)');
+if(s.flaggedIngredients>0)lines.push('\u26a0\ufe0f '+s.flaggedIngredients+' ingredients with safety flags');
+else lines.push('\u2705 No flagged ingredients found');
+if(s.allergenCount>0)lines.push('\u2139\ufe0f '+s.allergenCount+' EU fragrance allergens detected (EU 2023/1545)');
+}
+}else{
 if(currentLang==='he'){
 lines.push('\u2705 '+s.mohChecked+' רכיבים נבדקו מול מאגר התרופות של משרד הבריאות');
 if(s.prescriptionFound>0)lines.push('\u26a0\ufe0f '+s.prescriptionFound+' רכיבים מזוהים כתרופות מרשם בישראל');
@@ -395,6 +411,7 @@ if(s.ulExceeded>0)lines.push('\u26a0\ufe0f '+s.ulExceeded+' ingredients exceed U
 else lines.push('\u2705 All dosages within safe limits');
 }
 if(s.d1Matched>0)lines.push('\u2705 '+s.d1Matched+' ingredients found in our safety database');
+}
 }
 var smbody=document.createElement('div');smbody.className='extra-text';smbody.style.whiteSpace='pre-line';
 smbody.style.direction=currentLang==='he'?'rtl':'ltr';smbody.style.textAlign=currentLang==='he'?'right':'left';
@@ -422,8 +439,14 @@ var nm=document.createElement('div');nm.className='ing-name';nm.textContent=name
 if(subName){var ne=document.createElement('div');ne.className='ing-name-en';ne.textContent=subName;nameDiv.appendChild(ne);}
 topDiv.appendChild(nameDiv);
 var amDiv=document.createElement('div');
+if(data.type==='cosmetic'){
+if(ing.concernLevel){var cl=document.createElement('div');cl.className='ing-amount';cl.style.color=ing.concernLevel==='high'?'var(--red)':ing.concernLevel==='moderate'?'var(--yellow)':'var(--green)';cl.textContent=ing.concernLevel;amDiv.appendChild(cl);}
+if(ing.category){var ct=document.createElement('div');ct.className='ing-dv';ct.textContent=ing.category;amDiv.appendChild(ct);}
+if(!ing.found){var nf=document.createElement('div');nf.className='ing-dv';nf.style.opacity='0.5';nf.textContent=currentLang==='he'?'לא נמצא במאגר':'Not in database';amDiv.appendChild(nf);}
+}else{
 if(ing.amount){var am=document.createElement('div');am.className='ing-amount';am.textContent=ing.amount;amDiv.appendChild(am);}
 if(ing.dailyValue){var dv=document.createElement('div');dv.className='ing-dv';dv.textContent=ing.dailyValue;amDiv.appendChild(dv);}
+}
 topDiv.appendChild(amDiv);card.appendChild(topDiv);
 if(ing.flags&&ing.flags.length>0){
 var fd=document.createElement('div');fd.className='ing-flags';
