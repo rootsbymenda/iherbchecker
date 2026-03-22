@@ -670,7 +670,7 @@ export async function onRequestPost(context) {
         if (parsedUrl) {
             parsedUrl.searchParams.delete('rcode');
             [...parsedUrl.searchParams.keys()]
-                .filter(k => k.startsWith('utm_'))
+                .filter(k => k.startsWith('utm_') || k.startsWith('_gl') || k === 'gclid' || k === 'gbraid' || k === 'gad_source')
                 .forEach(k => parsedUrl.searchParams.delete(k));
         }
 
