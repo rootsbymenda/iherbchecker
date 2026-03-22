@@ -184,11 +184,41 @@ function parseIHerbPage(html) {
     }
 
     // ── Other Ingredients ──
-    const otherIdx = html.indexOf('Other Ingredients');
+    const otherIdxUpper = html.indexOf('Other Ingredients');
+    const otherIdxLower = html.indexOf('Other ingredients');
+    const otherIdx = otherIdxUpper > -1 ? otherIdxUpper : otherIdxLower;
     if (otherIdx > -1) {
-        const snippet = html.substring(otherIdx, otherIdx + 600);
-        const textMatch = snippet.match(/Other Ingredients[^<]*<\/[^>]+>\s*<[^>]+>([^<]+)/i);
-        if (textMatch) result.otherIngredients = textMatch[1].replace(/&nbsp;/g, ' ').trim();
+        const snippet = html.substring(otherIdx, otherIdx + 3000);
+        let extracted = null;
+
+        // Pattern 1: immediate next tag (original)
+        const p1 = snippet.match(/Other [Ii]ngredients[^<]*<\/[^>]+>\s*<[^>]+>([^<]+)/i);
+        if (p1 && p1[1].length > 10) extracted = p1[1];
+
+        // Pattern 2: skip nested tags to find content
+        if (!extracted) {
+            const p2 = snippet.match(/Other [Ii]ngredients[\s\S]*?<\/\w+>\s*(?:<\w[^>]*>\s*)*<(?:p|div|span)[^>]*>([^<]{15,})/i);
+            if (p2) extracted = p2[1];
+        }
+
+        // Pattern 3: find comma-separated INCI-looking text after heading
+        if (!extracted) {
+            const afterHeading = snippet.substring(snippet.indexOf('>') + 1);
+            const textBlocks = afterHeading.match(/>([^<]{20,})/g);
+            if (textBlocks) {
+                for (const block of textBlocks) {
+                    const text = block.substring(1).trim();
+                    if (text.includes(',') && !text.includes('Disclaimer') && !text.includes('iHerb')) {
+                        extracted = text;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (extracted) {
+            result.otherIngredients = extracted.replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        }
     }
 
     // ── Warnings ──
