@@ -188,36 +188,19 @@ function parseIHerbPage(html) {
     const otherIdxLower = html.indexOf('Other ingredients');
     const otherIdx = otherIdxUpper > -1 ? otherIdxUpper : otherIdxLower;
     if (otherIdx > -1) {
-        const snippet = html.substring(otherIdx, otherIdx + 3000);
-        let extracted = null;
+        const afterOther = html.substring(otherIdx, otherIdx + 5000);
 
-        // Pattern 1: immediate next tag (original)
-        const p1 = snippet.match(/Other [Ii]ngredients[^<]*<\/[^>]+>\s*<[^>]+>([^<]+)/i);
-        if (p1 && p1[1].length > 10) extracted = p1[1];
-
-        // Pattern 2: skip nested tags to find content
-        if (!extracted) {
-            const p2 = snippet.match(/Other [Ii]ngredients[\s\S]*?<\/\w+>\s*(?:<\w[^>]*>\s*)*<(?:p|div|span)[^>]*>([^<]{15,})/i);
-            if (p2) extracted = p2[1];
-        }
-
-        // Pattern 3: find comma-separated INCI-looking text after heading
-        if (!extracted) {
-            const afterHeading = snippet.substring(snippet.indexOf('>') + 1);
-            const textBlocks = afterHeading.match(/>([^<]{20,})/g);
-            if (textBlocks) {
-                for (const block of textBlocks) {
-                    const text = block.substring(1).trim();
-                    if (text.includes(',') && !text.includes('Disclaimer') && !text.includes('iHerb')) {
-                        extracted = text;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (extracted) {
-            result.otherIngredients = extracted.replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+        // iHerb wraps ingredients in: <h3><strong>Other ingredients</strong></h3>
+        // then <div class="prodOverviewIngred"><p>INCI list here</p></div>
+        // Simple approach: find first <p> with 15+ chars of real content
+        const pMatch = afterOther.match(/<p[^>]*>([^<]{15,})/);
+        if (pMatch) {
+            result.otherIngredients = pMatch[1]
+                .replace(/&nbsp;/g, ' ')
+                .replace(/&amp;/g, '&')
+                .replace(/&#x27;/g, "'")
+                .replace(/\s+/g, ' ')
+                .trim();
         }
     }
 
