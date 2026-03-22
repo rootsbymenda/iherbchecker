@@ -697,16 +697,19 @@ export async function onRequestPost(context) {
         const product = parseIHerbPage(html);
 
         // ── COSMETIC PRODUCT DETECTED ──
-        // If no supplement facts but INCI list found, redirect to Piro
+        // If no supplement facts but INCI list found, redirect to Piro with pre-filled ingredients
         if (product.ingredients.length === 0 && product.inciList?.length > 0) {
+            const inciParam = encodeURIComponent(product.inciList.join(', '));
+            const piroUrl = `https://getpiro.com?ingredients=${inciParam}`;
             return new Response(JSON.stringify({
                 type: 'cosmetic_redirect',
                 error: 'המוצר הזה הוא מוצר קוסמטיקה/טיפוח, לא תוסף תזונה.',
                 errorEn: 'This is a cosmetic/skincare product, not a supplement.',
-                redirect: 'https://getpiro.com',
-                redirectText: 'לבדיקת מוצרי קוסמטיקה וטיפוח — השתמשו ב-Piro',
-                redirectTextEn: 'To check cosmetic and skincare ingredients — use Piro',
+                redirect: piroUrl,
+                redirectText: 'בדוק את הרכיבים ב-Piro — סורק רכיבי קוסמטיקה',
+                redirectTextEn: 'Check these ingredients on Piro — cosmetic ingredient scanner',
                 product: { name: product.name, brand: product.brand },
+                ingredientCount: product.inciList.length,
             }), { status: 200, headers });
         }
 
