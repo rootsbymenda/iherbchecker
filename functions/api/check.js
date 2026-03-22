@@ -806,6 +806,15 @@ export async function onRequestPost(context) {
                 error: 'לא נמצאו רכיבים בדף המוצר. ייתכן שהמוצר הופסק.',
                 errorEn: 'No ingredients found. Product may be discontinued.',
                 product: { name: product.name, brand: product.brand },
+                debug: {
+                    htmlLength: html.length,
+                    hasOtherIngredients: html.includes('Other Ingredients') || html.includes('Other ingredients'),
+                    hasServingSize: html.includes('Serving Size'),
+                    isCosmetic: product.isCosmetic || false,
+                    inciListLength: product.inciList?.length || 0,
+                    otherIngredients: product.otherIngredients || null,
+                    fetchedUrl: parsedUrl.href,
+                },
             }), { status: 404, headers });
         }
 
