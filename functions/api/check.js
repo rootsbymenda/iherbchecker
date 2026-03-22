@@ -696,96 +696,17 @@ export async function onRequestPost(context) {
         const html = await pageResp.text();
         const product = parseIHerbPage(html);
 
-        // ── COSMETIC PRODUCT PATH ──
-        // If no supplement facts but INCI list found, run cosmetic analysis
-        if (product.ingredients.length === 0 && product.inciList?.length > 0 && env.DB) {
-            const cosmeticResults = {};
-
-            const cosmeticLookups = product.inciList.map(async (inciName) => {
-                cosmeticResults[inciName] = await checkCosmeticIngredient(env.DB, inciName);
-            });
-            await Promise.all(cosmeticLookups);
-
-            const score = calculateCosmeticScore(cosmeticResults);
-            const verdict = getVerdict(score);
-
-            const enrichedIngredients = product.inciList.map(inciName => {
-                const data = cosmeticResults[inciName];
-                const flags = [];
-
-                if (data?.found) {
-                    const concern = (data.concernLevel || '').toLowerCase();
-                    if (concern === 'high') {
-                        flags.push({ type: 'high_concern', severity: 'high', text: 'רמת דאגה גבוהה', textEn: `High concern: ${data.description || ''}` });
-                    } else if (concern === 'moderate') {
-                        flags.push({ type: 'moderate_concern', severity: 'medium', text: 'רמת דאגה בינונית', textEn: `Moderate concern: ${data.description || ''}` });
-                    }
-
-                    const eu = (data.euStatus || '').toLowerCase();
-                    if (eu.includes('prohibited') || eu.includes('banned')) {
-                        flags.push({ type: 'eu_banned', severity: 'high', text: 'אסור באיחוד האירופי', textEn: 'Prohibited in the EU' });
-                    } else if (eu.includes('restricted')) {
-                        flags.push({ type: 'eu_restricted', severity: 'medium', text: 'מוגבל באיחוד האירופי', textEn: `EU restricted: ${data.euStatus}` });
-                    }
-
-                    if (data.sensitization && parseFloat(data.sensitization) > 3) {
-                        flags.push({ type: 'sensitizer', severity: 'medium', text: 'עלול לגרום לרגישות עור', textEn: 'Potential skin sensitizer' });
-                    }
-
-                    if (data.comedogenic && parseFloat(data.comedogenic) >= 3) {
-                        flags.push({ type: 'comedogenic', severity: 'medium', text: 'עלול לגרום לחסימת נקבוביות', textEn: `Comedogenic rating: ${data.comedogenic}/5` });
-                    }
-                }
-
-                // Allergen flag — even if not in DB, we know from the EU list
-                if (data?.isAllergen) {
-                    flags.push({ type: 'allergen', severity: 'info', text: 'אלרגן מוכר (EU 2023/1545) — חייב סימון', textEn: 'EU fragrance allergen — mandatory labeling (EU 2023/1545)' });
-                }
-
-                return {
-                    name: inciName,
-                    found: data?.found || false,
-                    safetyScore: data?.safetyScore || null,
-                    concernLevel: data?.concernLevel || null,
-                    category: data?.category || null,
-                    euStatus: data?.euStatus || null,
-                    usStatus: data?.usStatus || null,
-                    isAllergen: data?.isAllergen || false,
-                    flags,
-                };
-            });
-
-            const matched = enrichedIngredients.filter(i => i.found).length;
-            const flagged = enrichedIngredients.filter(i => i.flags.length > 0).length;
-            const allergens = enrichedIngredients.filter(i => i.isAllergen).length;
-
+        // ── COSMETIC PRODUCT DETECTED ──
+        // If no supplement facts but INCI list found, redirect to Piro
+        if (product.ingredients.length === 0 && product.inciList?.length > 0) {
             return new Response(JSON.stringify({
-                type: 'cosmetic',
-                score,
-                ...verdict,
-                product: {
-                    name: product.name,
-                    brand: product.brand,
-                    upc: product.upc,
-                    warnings: product.warnings,
-                    warningsHe: translateWarnings(product.warnings),
-                    suggestedUse: product.suggestedUse,
-                },
-                ingredients: enrichedIngredients,
-                otherIngredients: product.otherIngredients,
-                summary: {
-                    totalIngredients: product.inciList.length,
-                    matchedInDb: matched,
-                    flaggedIngredients: flagged,
-                    allergenCount: allergens,
-                    coveragePercent: Math.round((matched / product.inciList.length) * 100),
-                },
-                meta: {
-                    checkedAt: new Date().toISOString(),
-                    productType: 'cosmetic',
-                    ingredientCount: product.inciList.length,
-                    flagCount: enrichedIngredients.reduce((sum, i) => sum + i.flags.length, 0),
-                },
+                type: 'cosmetic_redirect',
+                error: 'המוצר הזה הוא מוצר קוסמטיקה/טיפוח, לא תוסף תזונה.',
+                errorEn: 'This is a cosmetic/skincare product, not a supplement.',
+                redirect: 'https://getpiro.com',
+                redirectText: 'לבדיקת מוצרי קוסמטיקה וטיפוח — השתמשו ב-Piro',
+                redirectTextEn: 'To check cosmetic and skincare ingredients — use Piro',
+                product: { name: product.name, brand: product.brand },
             }), { status: 200, headers });
         }
 

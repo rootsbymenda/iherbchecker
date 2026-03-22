@@ -324,6 +324,7 @@ showScreen('screen-loading');animateSteps();
 fetch('/api/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:url})})
 .then(function(r){return r.json();})
 .then(function(data){
+if(data.type==='cosmetic_redirect'){showScreen('screen-input');errEl.textContent='';var cmsg=document.createTextNode(currentLang==='he'?data.error:data.errorEn);errEl.appendChild(cmsg);errEl.appendChild(document.createElement('br'));errEl.appendChild(document.createElement('br'));var clink=document.createElement('a');clink.href=data.redirect;clink.target='_blank';clink.rel='noopener';clink.style.cssText='color:#22c55e;font-weight:700;text-decoration:underline';clink.textContent=currentLang==='he'?data.redirectText:data.redirectTextEn;errEl.appendChild(clink);return;}
 if(data.error){showScreen('screen-input');errEl.textContent=(currentLang==='he'?(data.error||t.errorServer):(data.errorEn||data.error||t.errorServer));return;}
 lastData=data;renderResults(data);showScreen('screen-results');
 })
