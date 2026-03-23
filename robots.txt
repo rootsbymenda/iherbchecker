@@ -3,6 +3,7 @@ Allow: /
 Allow: /supplement/
 Allow: /he/
 
+Allow: /api/supplement-sitemap
 Disallow: /api/
 
 Sitemap: https://iherbchecker.com/sitemap.xml

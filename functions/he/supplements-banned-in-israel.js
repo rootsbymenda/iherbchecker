@@ -90,7 +90,7 @@ function buildSchemas() {
     author: { '@type': 'Person', name: 'Benda' },
     publisher: {
       '@type': 'Organization',
-      name: 'HealthyScan',
+      name: 'iHerb Checker',
       url: 'https://twohalves.ai',
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },

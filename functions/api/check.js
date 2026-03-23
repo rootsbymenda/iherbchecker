@@ -190,15 +190,15 @@ function parseIHerbPage(html) {
     if (otherIdx > -1) {
         const afterOther = html.substring(otherIdx, otherIdx + 5000);
 
-        // iHerb wraps ingredients in: <h3><strong>Other ingredients</strong></h3>
-        // then <div class="prodOverviewIngred"><p>INCI list here</p></div>
-        // Simple approach: find first <p> with 15+ chars of real content
-        const pMatch = afterOther.match(/<p[^>]*>([^<]{15,})/);
-        if (pMatch) {
-            result.otherIngredients = pMatch[1]
-                .replace(/&nbsp;/g, ' ')
-                .replace(/&amp;/g, '&')
-                .replace(/&#x27;/g, "'")
+        // Strip HTML tags and extract plain text from the section
+        const plain = afterOther.substring(0, 5000).replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&#?\w+;/g, ' ').replace(/\s+/g, ' ').trim();
+        // Look for ingredient text after the heading in the plain version
+        const headingEnd = plain.indexOf('Other Ingredients') > -1
+            ? plain.indexOf('Other Ingredients') + 'Other Ingredients'.length
+            : plain.indexOf('Other ingredients') + 'Other ingredients'.length;
+        const afterHeading = plain.substring(headingEnd).trim();
+        if (afterHeading.length >= 15) {
+            result.otherIngredients = afterHeading
                 .replace(/\s+/g, ' ')
                 .trim();
         }

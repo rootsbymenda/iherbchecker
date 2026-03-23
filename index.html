@@ -307,7 +307,7 @@ setTimeout(function(){el.classList.remove('show');},2500);
 }
 
 function extractIHerbUrl(text){
-var full=text.match(/https?:\/\/(?:www\.|il\.)?iherb\.com\/pr\/[^\s"'<>]+/i);
+var full=text.match(/https?:\/\/(?:[a-z]{2,3}\.)?iherb\.com\/pr\/[^\s"'<>]+/i);
 if(full)return full[0];
 var short=text.match(/https?:\/\/iherb\.co\/[^\s"'<>]+/i);
 if(short)return short[0];
