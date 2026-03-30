@@ -885,6 +885,7 @@ ${reg.details ? `<p class="reg-details">${escHtml(reg.details)}</p>` : ''}
 <meta property="og:type" content="article">
 <meta property="og:url" content="${canonical}">
 <meta property="og:site_name" content="iHerb Checker">
+<meta property="og:image" content="https://iherbchecker.com/og-image.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="${escHtml(supp.he)} (${nameEn}) - iHerb Checker">
 <meta name="twitter:description" content="${escHtml(metaDescEn)}">
@@ -974,6 +975,12 @@ header .wrap{display:flex;align-items:center;justify-content:space-between}
 .cta-btn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;padding:14px 32px;border-radius:var(--radius);font-size:16px;font-weight:700;font-family:var(--font);text-decoration:none;transition:all .25s;box-shadow:0 2px 8px rgba(13,122,62,.25)}
 .cta-btn:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 4px 16px rgba(13,122,62,.35);text-decoration:none}
 .cta-btn svg{width:20px;height:20px;fill:currentColor}
+.cross-link-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 28px;margin:24px 0;text-align:center;box-shadow:var(--shadow-sm)}
+.cross-link-card h3{font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px}
+.cross-link-card p{font-size:15px;color:var(--text-2);line-height:1.7;margin-bottom:12px}
+.cross-link-card.roots-link p{margin-bottom:0}
+.cross-link-btn{display:inline-block;background:var(--blue-light);color:var(--blue);padding:10px 24px;border-radius:var(--radius);font-size:15px;font-weight:700;text-decoration:none;transition:all .25s;border:1px solid var(--blue-border)}
+.cross-link-btn:hover{filter:brightness(.95);transform:translateY(-1px);text-decoration:none}
 .related-supplements{margin:32px 0}
 .related-supplements h2{font-size:20px;font-weight:800;text-align:center;margin-bottom:16px}
 .related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
@@ -1107,6 +1114,16 @@ ${faqItems.map(f => `<div class="faq-item">
 </div>
 </div>
 
+<div class="cross-link-card">
+<h3>Checking a Cosmetic Product?</h3>
+<p>If you're looking at a skincare or cosmetics product, try <strong>Piro</strong> — our free ingredient scanner. Point your camera at any ingredient list.</p>
+<a href="https://getpiro.com" class="cross-link-btn">Try Piro Free &rarr;</a>
+</div>
+
+<div class="cross-link-card roots-link">
+<p>View detailed regulatory data for ${escHtml(nameEn)} on <a href="https://rootsbybenda.com/ingredients">Roots by Benda</a></p>
+</div>
+
 <div class="cta-section">
 <h2>יש לך מוצר מ-iHerb שמכיל ${nameHe}?</h2>
 <p>בדוק אותו עכשיו - בחינם, ללא הרשמה | Check it now - free, no signup</p>
@@ -1126,6 +1143,7 @@ ${renderRelatedSupplements(slug)}
 <span>&middot;</span>
 <a href="https://twohalves.ai" target="_blank" rel="noopener">twohalves.ai</a>
 </div>
+<p style="font-size:13px;color:var(--text-3);margin-bottom:6px">Ingredient data by <a href="https://rootsbybenda.com">Roots by Benda</a> &middot; Cosmetic scanner: <a href="https://getpiro.com">Piro</a></p>
 <p>הכלי לא מהווה ייעוץ רפואי. התייעצו עם רופא לפני נטילת תוספי תזונה.</p>
 <p style="direction:ltr">This tool does not constitute medical advice. Consult a doctor before taking supplements.</p>
 </div>
@@ -1143,10 +1161,18 @@ q.addEventListener('click',function(){this.parentElement.classList.toggle('open'
 // ── Render related supplements grid ────────────────────────────
 function renderRelatedSupplements(currentSlug) {
   const slugs = Object.keys(SUPPLEMENTS).filter(s => s !== currentSlug);
-  // Pick 8 random related supplements
-  const shuffled = slugs.sort(() => Math.random() - 0.5).slice(0, 8);
+  // Deterministic selection: pick alphabetical neighbors around the current slug
+  const sorted = slugs.sort();
+  const idx = sorted.findIndex(s => s > currentSlug);
+  const start = idx === -1 ? 0 : Math.max(0, idx - 4);
+  const selected = sorted.slice(start, start + 8);
+  // If we don't have 8, wrap around from the beginning
+  if (selected.length < 8) {
+    const remaining = sorted.filter(s => !selected.includes(s)).slice(0, 8 - selected.length);
+    selected.push(...remaining);
+  }
 
-  const links = shuffled.map(s => {
+  const links = selected.map(s => {
     const supp = SUPPLEMENTS[s];
     return `<a href="/supplement/${escHtml(s)}" class="related-link">
 <span class="he-name">${escHtml(supp.he)}</span>
